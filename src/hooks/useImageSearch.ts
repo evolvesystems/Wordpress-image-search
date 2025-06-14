@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './useAuth';
 
 interface SearchResult {
   id: string;
@@ -14,15 +15,22 @@ interface SearchResult {
 }
 
 export const useImageSearch = () => {
+  const { user } = useAuth();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [allImages, setAllImages] = useState<SearchResult[]>([]);
 
   const loadAllImages = async () => {
+    if (!user) {
+      setAllImages([]);
+      return [];
+    }
+
     try {
       const { data: images, error } = await supabase
         .from('uploaded_images')
         .select('*')
+        .eq('user_id', user.id)
         .order('uploaded_at', { ascending: false });
 
       if (error) throw error;
@@ -59,6 +67,15 @@ export const useImageSearch = () => {
   };
 
   const searchImages = async (query: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to search your images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     console.log('Searching for:', query);
     
@@ -118,7 +135,7 @@ export const useImageSearch = () => {
         setResults(imagesToSearch.slice(0, 6));
         toast({
           title: "No exact matches",
-          description: `No exact matches for "${query}". Showing all uploaded images.`,
+          description: `No exact matches for "${query}". Showing all your uploaded images.`,
         });
       } else {
         setResults(resultsWithConfidence);

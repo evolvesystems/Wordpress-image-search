@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Upload, X, Plus, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UploadedImage {
   file: File;
@@ -18,6 +18,7 @@ interface UploadedImage {
 }
 
 const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => {
+  const { user } = useAuth();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -35,8 +36,21 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
     setImages(prev => [...prev, ...newImages]);
   };
 
+  const getUserApiKey = async () => {
+    if (!user) return null;
+    
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('openai_api_key')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    if (error || !data?.openai_api_key) return null;
+    return data.openai_api_key;
+  };
+
   const analyzeImage = async (index: number) => {
-    const apiKey = localStorage.getItem('openai_api_key');
+    const apiKey = await getUserApiKey();
     if (!apiKey) {
       toast({
         title: "OpenAI API Key Required",
@@ -114,6 +128,15 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
 
   const uploadImages = async () => {
     if (images.length === 0) return;
+    
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to upload images",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsUploading(true);
     let successCount = 0;
@@ -121,7 +144,7 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
     for (const image of images) {
       try {
         const fileName = `${Date.now()}-${image.file.name}`;
-        const filePath = `uploads/${fileName}`;
+        const filePath = `${user.id}/${fileName}`;
 
         // Upload to storage
         const { error: uploadError } = await supabase.storage
@@ -143,7 +166,8 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
             description: image.description,
             tags: allTags,
             file_size: image.file.size,
-            mime_type: image.file.type
+            mime_type: image.file.type,
+            user_id: user.id
           });
 
         if (dbError) throw dbError;
@@ -169,6 +193,15 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
       onUploadComplete();
     }
   };
+
+  if (!user) {
+    return (
+      <Card className="p-6 mb-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Upload Agricultural Images</h2>
+        <p className="text-gray-600 mb-4">Please sign in to upload and manage your images.</p>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6 mb-8">

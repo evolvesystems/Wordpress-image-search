@@ -1,16 +1,48 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Key, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const OpenAIKeyForm = () => {
-  const [apiKey, setApiKey] = useState(localStorage.getItem('openai_api_key') || '');
-  const [isVisible, setIsVisible] = useState(!localStorage.getItem('openai_api_key'));
+  const { user } = useAuth();
+  const [apiKey, setApiKey] = useState('');
+  const [isVisible, setIsVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (user) {
+      loadUserSettings();
+    }
+  }, [user]);
+
+  const loadUserSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('openai_api_key')
+        .eq('user_id', user?.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading settings:', error);
+        return;
+      }
+
+      if (data?.openai_api_key) {
+        setApiKey(data.openai_api_key);
+        setIsVisible(false);
+      }
+    } catch (error) {
+      console.error('Error loading user settings:', error);
+    }
+  };
+
+  const handleSave = async () => {
     if (!apiKey.trim()) {
       toast({
         title: "Invalid API Key",
@@ -20,25 +52,75 @@ const OpenAIKeyForm = () => {
       return;
     }
 
-    localStorage.setItem('openai_api_key', apiKey.trim());
-    setIsVisible(false);
-    toast({
-      title: "API Key Saved",
-      description: "Your OpenAI API key has been saved locally",
-    });
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to save your API key",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          openai_api_key: apiKey.trim(),
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      setIsVisible(false);
+      toast({
+        title: "API Key Saved",
+        description: "Your OpenAI API key has been saved securely",
+      });
+    } catch (error) {
+      console.error('Error saving API key:', error);
+      toast({
+        title: "Save failed",
+        description: "Failed to save API key. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRemove = () => {
-    localStorage.removeItem('openai_api_key');
-    setApiKey('');
-    setIsVisible(true);
-    toast({
-      title: "API Key Removed",
-      description: "Your OpenAI API key has been removed",
-    });
+  const handleRemove = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_settings')
+        .update({ openai_api_key: null })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setApiKey('');
+      setIsVisible(true);
+      toast({
+        title: "API Key Removed",
+        description: "Your OpenAI API key has been removed",
+      });
+    } catch (error) {
+      console.error('Error removing API key:', error);
+      toast({
+        title: "Remove failed",
+        description: "Failed to remove API key. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  if (!isVisible && localStorage.getItem('openai_api_key')) {
+  if (!user) return null;
+
+  if (!isVisible && apiKey) {
     return (
       <Card className="p-4 mb-4 bg-green-50 border-green-200">
         <div className="flex items-center justify-between">
@@ -85,13 +167,13 @@ const OpenAIKeyForm = () => {
             onChange={(e) => setApiKey(e.target.value)}
             className="flex-1"
           />
-          <Button onClick={handleSave} size="sm">
+          <Button onClick={handleSave} size="sm" disabled={isLoading}>
             <Save className="w-4 h-4 mr-1" />
-            Save
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </div>
         <p className="text-xs text-gray-500">
-          Your API key is stored locally in your browser and never sent to our servers.
+          Your API key is stored securely in your account.
           Get your key from{' '}
           <a 
             href="https://platform.openai.com/api-keys" 

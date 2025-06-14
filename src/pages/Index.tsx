@@ -1,5 +1,7 @@
 
 import React, { useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import AuthPage from '@/components/AuthPage';
 import ImageSearchHeader from '@/components/ImageSearchHeader';
 import SearchInterface from '@/components/SearchInterface';
 import ImageUpload from '@/components/ImageUpload';
@@ -8,15 +10,33 @@ import TechnologyShowcase from '@/components/TechnologyShowcase';
 import { useImageSearch } from '@/hooks/useImageSearch';
 
 const Index = () => {
+  const { user, loading } = useAuth();
   const { searchImages, results, isLoading, loadAllImages } = useImageSearch();
 
   useEffect(() => {
-    loadAllImages();
-  }, []);
+    if (user) {
+      loadAllImages();
+    }
+  }, [user]);
 
   const handleUploadComplete = () => {
     loadAllImages();
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
