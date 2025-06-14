@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, BrainCircuit, Download, Copy, Info } from "lucide-react";
-
-import { useAnalyzeWordPressImage } from "@/hooks/useAnalyzeWordPressImage";
+import { Download, Copy, Info } from "lucide-react";
 
 interface WordPressAnalyzeCardProps {
   img: {
@@ -25,22 +23,8 @@ interface WordPressAnalyzeCardProps {
 }
 
 const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img }) => {
-  const [showAI, setShowAI] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState("");
-  const {
-    tags,
-    isLoading,
-    error,
-    analyzeImage,
-    setTags,
-  } = useAnalyzeWordPressImage();
-
-  const handleAnalyze = () => {
-    setTags(null);
-    setShowAI(true);
-    analyzeImage(img.source_url);
-  };
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -141,7 +125,7 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
           </div>
         )}
 
-        {/* Spacer pushes analyze and view link to the bottom */}
+        {/* Spacer pushes view link to the bottom */}
         <div className="flex-grow" />
         {img.link && (
           <a
@@ -154,41 +138,6 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth={2} d="M10 14L21 3m0 0v7m0-7h-7M13 10v11a1 1 0 001 1h6a1 1 0 001-1V8m-8 6H4a1 1 0 01-1-1v-5a1 1 0 011-1h5a1 1 0 011 1v5a1 1 0 01-1 1z" /></svg>
             View page
           </a>
-        )}
-
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 w-full flex items-center justify-center"
-          disabled={isLoading}
-          onClick={handleAnalyze}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <BrainCircuit className="w-4 h-4 mr-2" />
-              Analyze Image (AI)
-            </>
-          )}
-        </Button>
-        {showAI && (
-          <div className="mt-2">
-            {error && (
-              <div className="text-xs text-red-500">
-                Error: {error}
-              </div>
-            )}
-            {tags && (
-              <div className="text-xs bg-green-50 text-green-700 p-2 rounded">
-                <span className="font-medium">AI Tags: </span>
-                {tags}
-              </div>
-            )}
-          </div>
         )}
       </div>
     </Card>
