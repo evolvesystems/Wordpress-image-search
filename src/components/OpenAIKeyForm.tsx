@@ -23,7 +23,7 @@ const OpenAIKeyForm = () => {
   const loadUserSettings = async () => {
     try {
       const { data, error } = await supabase
-        .from('user_settings')
+        .from('user_settings' as any)
         .select('openai_api_key')
         .eq('user_id', user?.id)
         .maybeSingle();
@@ -65,12 +65,12 @@ const OpenAIKeyForm = () => {
 
     try {
       const { error } = await supabase
-        .from('user_settings')
+        .from('user_settings' as any)
         .upsert({
           user_id: user.id,
           openai_api_key: apiKey.trim(),
           updated_at: new Date().toISOString(),
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -96,8 +96,8 @@ const OpenAIKeyForm = () => {
 
     try {
       const { error } = await supabase
-        .from('user_settings')
-        .update({ openai_api_key: null })
+        .from('user_settings' as any)
+        .update({ openai_api_key: null } as any)
         .eq('user_id', user.id);
 
       if (error) throw error;

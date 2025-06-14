@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Upload, X, Plus, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -40,7 +41,7 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
     if (!user) return null;
     
     const { data, error } = await supabase
-      .from('user_settings')
+      .from('user_settings' as any)
       .select('openai_api_key')
       .eq('user_id', user.id)
       .maybeSingle();
@@ -168,7 +169,7 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
             file_size: image.file.size,
             mime_type: image.file.type,
             user_id: user.id
-          });
+          } as any);
 
         if (dbError) throw dbError;
         successCount++;
