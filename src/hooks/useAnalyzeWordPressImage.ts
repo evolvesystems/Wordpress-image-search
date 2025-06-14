@@ -10,15 +10,29 @@ export const useAnalyzeWordPressImage = () => {
 
   const { user } = useAuth();
 
+  // Fetch the user's OpenAI API key from DB
+  const getUserOpenAIKey = async () => {
+    const { data, error } = await supabase
+      .from('user_settings' as any)
+      .select('openai_api_key')
+      .eq('user_id', user?.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message || "Could not load key");
+    return (data as any)?.openai_api_key;
+  };
+
   const analyzeImage = async (imageUrl: string) => {
     setIsLoading(true);
     setTags(null);
     setError(null);
 
     try {
-      // Use supabase.functions.invoke to ensure auth header inclusion
+      const openai_api_key = await getUserOpenAIKey();
+      if (!openai_api_key) throw new Error("OpenAI API key not found.");
+
+      // Use supabase.functions.invoke and send the key with request
       const { data, error } = await supabase.functions.invoke('analyze-wordpress-image', {
-        body: { imageUrl, user_id: user?.id },
+        body: { imageUrl, openai_api_key },
       });
 
       if (error) {

@@ -1,11 +1,6 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.5";
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL");
-const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const supabase = createClient(supabaseUrl, serviceKey);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,20 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl, user_id } = await req.json();
-    if (!imageUrl || !user_id) throw new Error("Missing imageUrl or user_id");
-
-    // Use Supabase client to fetch user's OpenAI API key
-    const { data: settings, error: settingsError } = await supabase
-      .from("user_settings")
-      .select("openai_api_key")
-      .eq("user_id", user_id)
-      .maybeSingle();
-
-    if (settingsError) throw new Error("Failed to load user settings: " + settingsError.message);
-    if (!settings?.openai_api_key) throw new Error("OpenAI API key not found for user");
-
-    const openAIApiKey = settings.openai_api_key;
+    // Get everything directly from request body
+    const { imageUrl, openai_api_key } = await req.json();
+    if (!imageUrl || !openai_api_key) throw new Error("Missing imageUrl or openai_api_key");
 
     // Download the image as blob
     const imgResp = await fetch(imageUrl);
@@ -43,7 +27,7 @@ serve(async (req) => {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: "POST",
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${openai_api_key}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
