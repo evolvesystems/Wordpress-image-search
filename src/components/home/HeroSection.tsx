@@ -1,4 +1,3 @@
-
 import React from "react";
 
 const stats = [
@@ -19,12 +18,12 @@ const HeroSection = () => (
           Effortlessly find every image on your site. <span className="font-semibold text-green-900">Powered by earth-friendly, instant AI search.</span>
         </p>
         <div className="flex flex-wrap gap-4">
-          <a href="#pricing">
+          <a href="/auth">
             <button className="px-8 py-3 text-lg bg-green-600 text-white font-bold hover:bg-green-700 rounded-xl shadow-lg transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-green-800">
               🔎 Try Instantly Free
             </button>
           </a>
-          <a href="#ai-chat">
+          <a href="/auth">
             <button className="px-8 py-3 text-lg border border-green-300 text-green-700 hover:bg-green-100 hover:text-green-900 rounded-xl flex items-center gap-2 transition hover:scale-105">
               💬 Experience AI Chat
             </button>

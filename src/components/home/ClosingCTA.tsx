@@ -11,12 +11,12 @@ const ClosingCTA = () => (
         Cut through the chaos—get instant, earth-friendly answers about all your images. No setup headaches, just clean results.
       </p>
       <div className="flex flex-wrap gap-4 justify-center">
-        <a href="#pricing">
+        <a href="/auth">
           <button className="px-8 py-3 text-lg bg-green-700 text-white font-bold hover:bg-green-800 rounded-xl shadow-lg transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-green-800">
             🔎 Try Instantly Free
           </button>
         </a>
-        <a href="#ai-chat">
+        <a href="/auth">
           <button className="px-8 py-3 text-lg border border-green-200 text-green-50 hover:bg-white hover:text-green-700 flex items-center gap-2 rounded-xl transition hover:scale-105">
             💬 Experience AI Chat
           </button>
