@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from '../_shared/cors.ts'
 
@@ -14,6 +15,49 @@ interface WPImageResult {
   mime_type?: string;
   link?: string;
 }
+
+const sampleImages: WPImageResult[] = [
+  {
+    id: 101,
+    source_url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=80',
+    title: { rendered: 'Misty Mountains' },
+    alt_text: 'A landscape photo of mountains covered in mist.',
+    caption: { rendered: 'Sample image for demonstration.' },
+    media_details: { width: 400, height: 267 },
+    mime_type: 'image/jpeg',
+    link: '#',
+  },
+  {
+    id: 102,
+    source_url: 'https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=400&q=80',
+    title: { rendered: 'Cozy Living Room' },
+    alt_text: 'A cozy living room with a couch and a cat.',
+    caption: { rendered: 'Sample image for demonstration.' },
+    media_details: { width: 400, height: 267 },
+    mime_type: 'image/jpeg',
+    link: '#',
+  },
+  {
+    id: 103,
+    source_url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400&q=80',
+    title: { rendered: 'Yellow Flowers' },
+    alt_text: 'A field of bright yellow flowers.',
+    caption: { rendered: 'Sample image for demonstration.' },
+    media_details: { width: 400, height: 600 },
+    mime_type: 'image/jpeg',
+    link: '#',
+  },
+  {
+    id: 104,
+    source_url: 'https://images.unsplash.com/photo-1507525428034-b723a9ce6890?w=400&q=80',
+    title: { rendered: 'Beach Waves' },
+    alt_text: 'Ocean waves crashing on a sandy beach.',
+    caption: { rendered: 'Sample image for demonstration.' },
+    media_details: { width: 400, height: 267 },
+    mime_type: 'image/jpeg',
+    link: '#',
+  }
+];
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -36,7 +80,7 @@ serve(async (req) => {
     const lowerMessage = message.toLowerCase()
 
     if (wordpressUrl) {
-      // If a WordPress URL is provided, we assume every query is for an image search.
+      // LIVE MODE: If a WordPress URL is provided, we assume every query is for an image search.
       const searchQuery = lowerMessage.trim();
 
       if (!searchQuery) {
@@ -67,22 +111,17 @@ serve(async (req) => {
         }
       }
     } else {
-      // Fallback to conversational bot if no wordpressUrl is configured.
-      if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-        response.content = `Hello! Welcome to ${siteName}. How can I assist you today?`
-      } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-        response.content = "I'd be happy to help with pricing information. Could you tell me more about what you're looking for?"
-      } else if (lowerMessage.includes('contact') || lowerMessage.includes('support')) {
-        response.content = "You can reach our support team through the contact form on this website, or I can help answer your questions right here!"
-      } else if (lowerMessage.includes('product') || lowerMessage.includes('service')) {
-        response.content = "I can help you learn more about our products and services. What specific information are you looking for?"
-      } else if (lowerMessage.includes('help')) {
-        response.content = "I'm here to help! You can ask me about our products, services, pricing, or any other questions you might have."
-      } else if (lowerMessage.includes('thank')) {
-        response.content = "You're very welcome! Is there anything else I can help you with?"
+      // DEMO MODE: Fallback to sample images if no wordpressUrl is configured.
+      const searchQuery = lowerMessage.trim();
+
+      if (!searchQuery) {
+        response.content = "Please tell me what image you're looking for.";
       } else {
-        // Default helpful response
-        response.content = "That's a great question! While I'm still learning, I'd recommend checking out the main sections of this website or contacting our team directly for more detailed information."
+        response = {
+          type: 'image_results',
+          content: `This is a demo. In a live environment, I would search your media library. Here are some sample images for "${searchQuery}":`,
+          results: sampleImages
+        };
       }
     }
 
