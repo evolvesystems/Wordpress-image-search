@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Camera, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useWordPressUserSettings } from '@/hooks/useWordPressUserSettings';
 import { useWordPressImageSearch } from '@/hooks/useWordPressImageSearch';
+import WordPressImageAnalyzeCard from "./WordPressImageAnalyzeCard";
 
 const SearchInterface = () => {
   const { user } = useAuth();
@@ -109,27 +109,7 @@ const SearchInterface = () => {
           <div className="mt-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {results.map(img => (
-                <Card key={img.id} className="overflow-hidden border">
-                  <img src={img.source_url} alt={img.alt_text || img.title?.rendered} className="w-full h-32 object-cover bg-gray-100" />
-                  <div className="p-2">
-                    <div className="text-xs font-medium">{img.title?.rendered}</div>
-                    {img.caption?.rendered && (
-                      <div className="text-xs text-gray-500" dangerouslySetInnerHTML={{ __html: img.caption.rendered }} />
-                    )}
-                    {img.link && (
-                      <a
-                        href={img.link}
-                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="View this image in WordPress"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth={2} d="M10 14L21 3m0 0v7m0-7h-7M13 10v11a1 1 0 001 1h6a1 1 0 001-1V8m-8 6H4a1 1 0 01-1-1v-5a1 1 0 011-1h5a1 1 0 011 1v5a1 1 0 01-1 1z"/></svg>
-                        View page
-                      </a>
-                    )}
-                  </div>
-                </Card>
+                <WordPressImageAnalyzeCard key={img.id} img={img} />
               ))}
             </div>
           </div>
