@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Upload, X, Plus } from 'lucide-react';
+import { Upload, X, Plus, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -13,6 +13,8 @@ interface UploadedImage {
   title: string;
   description: string;
   tags: string;
+  aiTags?: string;
+  isAnalyzing?: boolean;
 }
 
 const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => {
@@ -26,9 +28,51 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
       preview: URL.createObjectURL(file),
       title: '',
       description: '',
-      tags: ''
+      tags: '',
+      aiTags: '',
+      isAnalyzing: false
     }));
     setImages(prev => [...prev, ...newImages]);
+  };
+
+  const analyzeImage = async (index: number) => {
+    setImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, isAnalyzing: true } : img
+    ));
+
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-image', {
+        body: { 
+          imageUrl: images[index].preview,
+          filename: images[index].file.name 
+        }
+      });
+
+      if (error) throw error;
+
+      setImages(prev => prev.map((img, i) => 
+        i === index ? { 
+          ...img, 
+          aiTags: data.tags,
+          isAnalyzing: false 
+        } : img
+      ));
+
+      toast({
+        title: "Image analyzed",
+        description: "AI has generated tags for your image",
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
+      setImages(prev => prev.map((img, i) => 
+        i === index ? { ...img, isAnalyzing: false } : img
+      ));
+      toast({
+        title: "Analysis failed",
+        description: "Could not analyze image. You can still add manual tags.",
+        variant: "destructive",
+      });
+    }
   };
 
   const removeImage = (index: number) => {
@@ -42,6 +86,19 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
     setImages(prev => prev.map((img, i) => 
       i === index ? { ...img, [field]: value } : img
     ));
+  };
+
+  const combineAITags = (index: number) => {
+    const image = images[index];
+    const aiTags = image.aiTags || '';
+    const manualTags = image.tags || '';
+    
+    if (aiTags && manualTags) {
+      const combined = `${manualTags}, ${aiTags}`;
+      updateImageData(index, 'tags', combined);
+    } else if (aiTags) {
+      updateImageData(index, 'tags', aiTags);
+    }
   };
 
   const uploadImages = async () => {
@@ -62,6 +119,9 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
 
         if (uploadError) throw uploadError;
 
+        // Combine manual tags and AI tags
+        const allTags = image.tags ? image.tags.split(',').map(tag => tag.trim()) : [];
+
         // Save metadata to database
         const { error: dbError } = await supabase
           .from('uploaded_images')
@@ -70,7 +130,7 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
             storage_path: filePath,
             title: image.title || image.file.name,
             description: image.description,
-            tags: image.tags ? image.tags.split(',').map(tag => tag.trim()) : [],
+            tags: allTags,
             file_size: image.file.size,
             mime_type: image.file.type
           });
@@ -139,11 +199,49 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
                   value={image.description}
                   onChange={(e) => updateImageData(index, 'description', e.target.value)}
                 />
-                <Input
-                  placeholder="Tags (comma separated)"
-                  value={image.tags}
-                  onChange={(e) => updateImageData(index, 'tags', e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Tags (comma separated)"
+                    value={image.tags}
+                    onChange={(e) => updateImageData(index, 'tags', e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => analyzeImage(index)}
+                    disabled={image.isAnalyzing}
+                    className="whitespace-nowrap"
+                  >
+                    {image.isAnalyzing ? (
+                      <>
+                        <Brain className="w-4 h-4 mr-2 animate-pulse" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Brain className="w-4 h-4 mr-2" />
+                        AI Analyze
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {image.aiTags && (
+                  <div className="text-sm">
+                    <span className="text-green-600 font-medium">AI suggested tags: </span>
+                    <span className="text-gray-600">{image.aiTags}</span>
+                    <Button
+                      type="button"
+                      variant="link"
+                      size="sm"
+                      onClick={() => combineAITags(index)}
+                      className="ml-2 p-0 h-auto"
+                    >
+                      Use these tags
+                    </Button>
+                  </div>
+                )}
               </div>
               <Button
                 variant="outline"
