@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -60,7 +59,7 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="mb-2">
-                  <Link to="/" className="flex items-center gap-2 text-gray-600 hover:text-green-600">
+                  <Link to="/#search" className="flex items-center gap-2 text-gray-600 hover:text-green-600">
                     <Home className="w-4 h-4" />
                     <span>Back to Search</span>
                   </Link>
@@ -116,4 +115,3 @@ export function AdminSidebar() {
     </Sidebar>
   );
 }
-

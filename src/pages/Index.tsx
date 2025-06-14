@@ -8,12 +8,16 @@ import HowItWorks from '@/components/home/HowItWorks';
 import PricingOverview from '@/components/home/PricingOverview';
 import RealUseCases from '@/components/home/RealUseCases';
 import ClosingCTA from '@/components/home/ClosingCTA';
+import SearchInterface from '@/components/SearchInterface';
 import ImageAIAssistant from '@/components/ImageAIAssistant';
 
 const Index = () => (
   <div className="min-h-screen w-full bg-gradient-to-b from-blue-100 via-blue-50 to-white relative font-sans">
     <HeaderNav />
     <HeroSection />
+    <div id="search">
+      <SearchInterface />
+    </div>
     <WhyItMatters />
     <CoreFeatures />
     <HowItWorks />
