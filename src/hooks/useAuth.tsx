@@ -54,9 +54,15 @@ export const useAuth = () => {
     };
   }, []);
 
-  const signOut = async () => {
+  // Ref for tracking if we already signed out
+  const signOutPendingRef = React.useRef(false);
+
+  // Helper to perform actual signout
+  const performRealSignOut = async () => {
+    if (signOutPendingRef.current) return; // avoid multiple
+    signOutPendingRef.current = true;
     try {
-      console.log('Attempting to sign out...');
+      console.log('[Signout] Performing REAL signout...');
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Error signing out:', error);
@@ -67,41 +73,8 @@ export const useAuth = () => {
         });
         return;
       }
-      
-      console.log('Sign out successful');
-      toast({
-        title: "You have been signed out.",
-        description: (
-          <div>
-            Want an App Like this?{' '}
-            <a 
-              href="https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="font-bold text-blue-600 hover:underline"
-            >
-              Get a free trial here
-            </a>.
-          </div>
-        ),
-        duration: 100000, // basically persistent for a long time
-        action: (
-          <button
-            className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-4 py-2 ml-4"
-            onClick={() => {
-              window.open("https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a", "_blank", "noopener,noreferrer");
-              window.location.href = '/';
-            }}
-          >
-            Start your free trial
-          </button>
-        ),
-        onOpenChange: (open: boolean) => {
-          // If the user closes the toast, redirect
-          if (!open) window.location.href = '/';
-        },
-      });
-      // No auto-redirect; toast must be interacted with
+      // After logging out, navigate to home
+      window.location.href = '/';
     } catch (error: any) {
       console.error('Unexpected error during signout:', error);
       toast({
@@ -110,6 +83,40 @@ export const useAuth = () => {
         variant: "destructive",
       });
     }
+  };
+
+  // The signOut function now only shows the toast and logs (no actual signout yet)
+  const signOut = () => {
+    if (signOutPendingRef.current) return;
+
+    toast({
+      title: "You have been signed out.",
+      description: (
+        <div>
+          Want an App Like this?{' '}
+          <a
+            href="https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-blue-600 hover:underline"
+          >
+            Get a free trial here
+          </a>.
+        </div>
+      ),
+      duration: 100000, // persistent
+      action: (
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-4 py-2 ml-4"
+          onClick={performRealSignOut}
+        >
+          Start your free trial
+        </button>
+      ),
+      onOpenChange: (open: boolean) => {
+        if (!open) performRealSignOut();
+      },
+    });
   };
 
   return {

@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -7,6 +8,17 @@ import {
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast"
+
+// Custom ToastViewport to fix at the top of the screen
+function TopToastViewport(props: React.ComponentProps<typeof ToastViewport>) {
+  return (
+    <ToastViewport
+      {...props}
+      className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4"
+      style={{ right: "unset", bottom: "unset" }}
+    />
+  );
+}
 
 export function Toaster() {
   const { toasts } = useToast()
@@ -27,7 +39,7 @@ export function Toaster() {
           </Toast>
         )
       })}
-      <ToastViewport />
+      <TopToastViewport />
     </ToastProvider>
   )
 }
