@@ -20,7 +20,7 @@ const UserMenu = () => {
         <Button
           variant="outline"
           size="sm"
-          className="text-white border-white hover:bg-white hover:text-green-600"
+          className="text-green-600 bg-white border-green-600 hover:bg-green-50 hover:text-green-700"
         >
           <BarChart3 className="w-4 h-4 mr-1" />
           Dashboard
@@ -30,7 +30,7 @@ const UserMenu = () => {
         variant="outline"
         size="sm"
         onClick={signOut}
-        className="text-white border-white hover:bg-white hover:text-green-600"
+        className="text-green-600 bg-white border-green-600 hover:bg-green-50 hover:text-green-700"
       >
         <LogOut className="w-4 h-4 mr-1" />
         Sign Out
