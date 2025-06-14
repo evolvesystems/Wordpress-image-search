@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
@@ -104,9 +105,9 @@ const AdminDashboard = () => {
               <h3 className="font-semibold text-lg mb-1">3. Search & Chat</h3>
               {readyToSearch && <Check className="w-5 h-5 text-green-600 animate-fade-in" />}
             </div>
-            <p className="text-sm text-gray-600 mb-3 text-center">Instantly find images in your site, see where they’re used, or ask questions via AI chat.</p>
+            <p className="text-sm text-gray-600 mb-3 text-center">Instantly find images in your site, see where they're used, or ask questions via AI chat.</p>
             <Button variant="default" asChild>
-              <a href="/">Start Searching</a>
+              <a href="/search">Start Searching</a>
             </Button>
           </div>
         </div>
