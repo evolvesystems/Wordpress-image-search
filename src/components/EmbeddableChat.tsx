@@ -18,7 +18,7 @@ interface EmbeddableChatProps {
 }
 
 const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
-  apiEndpoint = "/api/chat",
+  apiEndpoint = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-embed`,
   primaryColor = "#16a34a",
   position = "bottom-right",
   siteName = "Website"

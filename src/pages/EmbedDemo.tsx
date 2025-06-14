@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 
 const EmbedDemo = () => {
@@ -15,7 +16,7 @@ const EmbedDemo = () => {
       script.src = '${window.location.origin}/embed.js';
       script.onload = function() {
         window.AIChat.init({
-          apiEndpoint: '${window.location.origin}/api/chat',
+          apiEndpoint: '${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-embed',
           primaryColor: '#16a34a',
           position: 'bottom-right',
           siteName: 'Your Website Name'
