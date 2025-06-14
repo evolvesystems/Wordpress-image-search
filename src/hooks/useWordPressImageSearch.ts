@@ -36,8 +36,11 @@ export const useWordPressImageSearch = () => {
       }
       const data = await resp.json();
       setResults(data);
+      return { data, error: null };
     } catch (e: any) {
-      setError(e?.message || "Unknown error");
+      const errorMessage = e?.message || "Unknown error";
+      setError(errorMessage);
+      return { data: [], error: errorMessage };
     } finally {
       setIsLoading(false);
     }

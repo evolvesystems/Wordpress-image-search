@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -17,7 +16,7 @@ const demoWelcome: Message[] = [
   {
     role: "bot",
     content:
-      "👋 Hi! I'm your AI Image Assistant. Ask me for an image (e.g., 'Show me a wheat field', 'Find drone photos'), and I'll help you search your WordPress library.\n\nTap the settings ⚙️ icon to connect your API key if you haven't yet.",
+      "Hi! I'm your AI Image Assistant. Ask me for an image (e.g., 'Show me a wheat field', 'Find drone photos'), and I'll help you search your WordPress library.",
   },
 ];
 
@@ -30,7 +29,6 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
   const {
     results,
     isLoading: searchLoading,
-    error: searchError,
     searchImages,
   } = useWordPressImageSearch();
   const [lastUserQuery, setLastUserQuery] = useState<string | null>(null);
@@ -70,7 +68,7 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
     }
 
     // Use existing search integration
-    await searchImages(settings.wordpress_url, value);
+    const { data: searchResults, error: searchError } = await searchImages(settings.wordpress_url, value);
     setLastUserQuery(value);
 
     if (searchError) {
@@ -81,18 +79,18 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
           content: `Error while searching WordPress: ${searchError}`,
         },
       ]);
-    } else if (results?.length > 0) {
+    } else if (searchResults && searchResults.length > 0) {
       setMessages((prev) => [
         ...prev,
         {
           role: "bot",
-          content: `Found ${results.length} result(s):`,
+          content: `I found ${searchResults.length} image(s) for "${value}":`,
         },
       ]);
     } else {
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "Sorry, I couldn't find any images for that search." },
+        { role: "bot", content: `Sorry, I couldn't find any images for "${value}".` },
       ]);
     }
     setIsLoading(false);
