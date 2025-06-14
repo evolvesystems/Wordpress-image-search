@@ -11,6 +11,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminImages from "./pages/admin/AdminImages";
 import ApiKeys from "./pages/admin/ApiKeys";
 import WordPressSearchSetup from "./pages/admin/WordPressSearchSetup";
+import ImageAIAssistantPage from "./pages/ImageAIAssistantPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/admin/api-keys" element={<AdminLayout><ApiKeys /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><div className="p-6"><h1 className="text-3xl font-bold">Personal Settings</h1><p className="text-gray-600 mt-2">Manage your account preferences and application settings.</p></div></AdminLayout>} />
           <Route path="/admin/wordpress-search-setup" element={<AdminLayout><WordPressSearchSetup /></AdminLayout>} />
+          <Route path="/ai-chat" element={<ImageAIAssistantPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,6 +4,8 @@ import AuthPage from '@/components/AuthPage';
 import ImageSearchHeader from '@/components/ImageSearchHeader';
 import SearchInterface from '@/components/SearchInterface';
 import TechnologyShowcase from '@/components/TechnologyShowcase';
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -26,12 +28,24 @@ const Index = () => {
   // For authenticated users, show the landing page but redirect them to admin on search
   return (
     <div className="min-h-screen bg-white">
+      <div className="w-full px-4 pt-5 flex justify-end">
+        <a href="/ai-chat">
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-green-700 border-green-600 hover:bg-green-100"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            AI Chat Assistant
+          </Button>
+        </a>
+      </div>
       <ImageSearchHeader />
-      
+
       <SearchInterface />
-      
+
       <TechnologyShowcase />
-      
+
       <div className="bg-green-600 text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Image Search?</h2>
