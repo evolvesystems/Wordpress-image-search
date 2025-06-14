@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,7 @@ import AdminImages from "./pages/admin/AdminImages";
 import ApiKeys from "./pages/admin/ApiKeys";
 import WordPressSearchSetup from "./pages/admin/WordPressSearchSetup";
 import ImageAIAssistant from "@/components/ImageAIAssistant";
+import AuthPage from "@/components/AuthPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +26,7 @@ const App = () => (
         <ImageAIAssistant />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/account" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/images" element={<AdminLayout><AdminImages /></AdminLayout>} />
@@ -43,4 +44,3 @@ const App = () => (
 );
 
 export default App;
-
