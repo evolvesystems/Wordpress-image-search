@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle } from "lucide-react";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
@@ -68,7 +69,6 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Response from chat-embed:', JSON.stringify(data, null, 2));
         const botResponse = data.response;
 
         if (botResponse) {

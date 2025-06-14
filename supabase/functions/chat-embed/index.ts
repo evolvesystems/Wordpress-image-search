@@ -67,7 +67,6 @@ serve(async (req) => {
 
   try {
     const body = await req.json()
-    console.log('chat-embed function invoked with body:', JSON.stringify(body, null, 2));
     const { message, siteName, wordpressUrl } = body;
 
     let response: {
@@ -127,7 +126,6 @@ serve(async (req) => {
       }
     }
 
-    console.log('chat-embed function responding with:', JSON.stringify({ response }, null, 2));
     return new Response(
       JSON.stringify({ response }),
       {

@@ -2,11 +2,12 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWordPressUserSettings } from "@/hooks/useWordPressUserSettings";
-import { useWordPressImageSearch } from "@/hooks/useWordPressImageSearch";
+import { type WPImageResult } from "@/hooks/useWordPressImageSearch";
 import { Message } from "./types";
 import ImageAssistantHeader from "./image-assistant/ImageAssistantHeader";
 import ImageAssistantMessageArea from "./image-assistant/ImageAssistantMessageArea";
 import ImageAssistantInput from "./image-assistant/ImageAssistantInput";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 
 type Props = {
   onClose: () => void;
@@ -26,7 +27,7 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { settings } = useWordPressUserSettings();
-  const { results, searchImages } = useWordPressImageSearch();
+  const [results, setResults] = useState<WPImageResult[]>([]);
   const [lastUserQuery, setLastUserQuery] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -36,8 +37,6 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, results]);
 
-  const hasWordPressUrl = !!settings?.wordpress_url;
-
   const handleSettings = () => {
     navigate("/admin/api-keys");
   };
@@ -46,50 +45,57 @@ const ImageAIAssistantChat: React.FC<Props> = ({ onClose }) => {
     e.preventDefault();
     const value = input.trim();
     if (!value) return;
+    
+    setResults([]);
     setMessages((prev) => [...prev, { role: "user", content: value }]);
     setInput("");
     setIsLoading(true);
-
-    if (!hasWordPressUrl) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          content:
-            "You need to connect your WordPress site to search images. Tap the ⚙️ settings icon to configure.",
-        },
-      ]);
-      setIsLoading(false);
-      return;
-    }
-
-    // Use existing search integration
-    const { data: searchResults, error: searchError } = await searchImages(settings.wordpress_url, value);
     setLastUserQuery(value);
 
-    if (searchError) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          content: `Error while searching WordPress: ${searchError}`,
+    const wordpressUrl = settings?.wordpress_url;
+    const apiEndpoint = `${SUPABASE_URL}/functions/v1/chat-embed`;
+    const siteName = "Admin Assistant";
+
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          "apikey": SUPABASE_PUBLISHABLE_KEY,
         },
-      ]);
-    } else if (searchResults && searchResults.length > 0) {
+        body: JSON.stringify({ message: value, siteName, wordpressUrl }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const botResponse = data.response;
+
+        if (botResponse) {
+          setMessages((prev) => [...prev, { role: "bot", content: botResponse.content }]);
+          if (botResponse.type === 'image_results' && botResponse.results) {
+            setResults(botResponse.results);
+          }
+        } else {
+           setMessages((prev) => [
+            ...prev,
+            { role: "bot", content: "I'm here to help! What would you like to know?" },
+          ]);
+        }
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: "I'm having trouble connecting right now. Please try again later." },
+        ]);
+      }
+    } catch (error) {
       setMessages((prev) => [
         ...prev,
-        {
-          role: "bot",
-          content: `I found ${searchResults.length} image(s) for "${value}":`,
-        },
+        { role: "bot", content: "I'm currently offline. Please try again later." },
       ]);
-    } else {
-      setMessages((prev) => [
-        ...prev,
-        { role: "bot", content: `Sorry, I couldn't find any images for "${value}".` },
-      ]);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
