@@ -1,27 +1,34 @@
-
 import React, { useRef, useEffect } from 'react';
 
 const EmbedDemo = () => {
   const embedCode = `<!-- AI Chat Widget -->
 <script>
   (function() {
-    // Create container
-    var container = document.createElement('div');
-    container.id = 'ai-chat-widget';
-    document.body.appendChild(container);
-    
-    // Load React and the widget
-    var script = document.createElement('script');
-    script.src = '${window.location.origin}/embed.js';
-    script.onload = function() {
-      window.AIChat.init({
-        apiEndpoint: '${window.location.origin}/api/chat',
-        primaryColor: '#16a34a',
-        position: 'bottom-right',
-        siteName: 'Your Website Name'
-      });
-    };
-    document.head.appendChild(script);
+    function initAIChat() {
+      // Create container
+      var container = document.createElement('div');
+      container.id = 'ai-chat-widget';
+      document.body.appendChild(container);
+      
+      // Load the widget script
+      var script = document.createElement('script');
+      script.src = '${window.location.origin}/embed.js';
+      script.onload = function() {
+        window.AIChat.init({
+          apiEndpoint: '${window.location.origin}/api/chat',
+          primaryColor: '#16a34a',
+          position: 'bottom-right',
+          siteName: 'Your Website Name'
+        });
+      };
+      document.head.appendChild(script);
+    }
+
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      initAIChat();
+    } else {
+      document.addEventListener('DOMContentLoaded', initAIChat, { once: true });
+    }
   })();
 </script>`;
 
