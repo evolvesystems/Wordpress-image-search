@@ -73,7 +73,8 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
     },
-    multiple: true
+    multiple: true,
+    maxSize: 10 * 1024 * 1024, // 10MB limit
   });
 
   const removeFile = (fileName: string) => {
@@ -119,15 +120,19 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
         const fileMetadata = metadata[file.name];
         const extractedMetadata = await extractImageMetadata(file);
         
-        // Upload to storage
-        const fileName = `${Date.now()}-${file.name}`;
+        // Create user-specific storage path for security
+        const timestamp = Date.now();
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const fileName = `${user.id}/${timestamp}-${sanitizedFileName}`;
+        
+        // Upload to storage with user-specific path
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('agri-images')
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
-        // Save metadata to database
+        // Save metadata to database with proper user_id
         const { error: dbError } = await supabase
           .from('uploaded_images')
           .insert({
@@ -142,7 +147,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
             file_size: file.size,
             width: extractedMetadata.width,
             height: extractedMetadata.height,
-            user_id: user.id
+            user_id: user.id // Explicitly set user_id for security
           });
 
         if (dbError) throw dbError;
@@ -184,7 +189,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
           ) : (
             <div>
               <p className="text-lg mb-2">Drag & drop images here, or click to select</p>
-              <p className="text-sm text-gray-500">Supports JPEG, PNG, GIF, WebP</p>
+              <p className="text-sm text-gray-500">Supports JPEG, PNG, GIF, WebP (max 10MB each)</p>
             </div>
           )}
         </div>
@@ -220,6 +225,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
                             value={metadata[file.name]?.title || ''}
                             onChange={(e) => updateMetadata(file.name, 'title', e.target.value)}
                             placeholder="Image title"
+                            maxLength={255}
                           />
                         </div>
                         <div>
@@ -228,6 +234,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
                             value={metadata[file.name]?.altText || ''}
                             onChange={(e) => updateMetadata(file.name, 'altText', e.target.value)}
                             placeholder="Alt text for accessibility"
+                            maxLength={255}
                           />
                         </div>
                       </div>
@@ -239,6 +246,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
                           onChange={(e) => updateMetadata(file.name, 'description', e.target.value)}
                           placeholder="Describe this image"
                           rows={2}
+                          maxLength={1000}
                         />
                       </div>
                       
@@ -248,6 +256,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
                           value={metadata[file.name]?.caption || ''}
                           onChange={(e) => updateMetadata(file.name, 'caption', e.target.value)}
                           placeholder="Image caption"
+                          maxLength={255}
                         />
                       </div>
                       
@@ -257,6 +266,7 @@ const ImageUpload = ({ onUploadComplete }: ImageUploadProps) => {
                           value={metadata[file.name]?.tags || ''}
                           onChange={(e) => updateMetadata(file.name, 'tags', e.target.value)}
                           placeholder="agriculture, crop, farming (comma separated)"
+                          maxLength={500}
                         />
                       </div>
                     </div>

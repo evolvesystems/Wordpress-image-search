@@ -27,10 +27,10 @@ export const useImageSearch = () => {
     }
 
     try {
+      // RLS policies now ensure users only see their own images
       const { data: images, error } = await supabase
         .from('uploaded_images')
         .select('*')
-        .eq('user_id', user.id)
         .order('uploaded_at', { ascending: false });
 
       if (error) throw error;
@@ -97,7 +97,7 @@ export const useImageSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Simple keyword matching for demonstration
-      const keywords = query.toLowerCase().split(' ');
+      const keywords = query.toLowerCase().split(' ').filter(k => k.length > 0);
       const matchedResults = imagesToSearch.filter(image => {
         const searchableText = (
           image.title + ' ' + 

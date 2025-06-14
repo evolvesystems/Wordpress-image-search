@@ -20,7 +20,7 @@ export type Database = {
           tags: string[] | null
           title: string | null
           uploaded_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           description?: string | null
@@ -32,7 +32,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           uploaded_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           description?: string | null
@@ -44,7 +44,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           uploaded_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -101,7 +101,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_wordpress_url: {
+        Args: { url: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
