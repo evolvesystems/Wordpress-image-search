@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Key } from 'lucide-react';
-import OpenAIKeyForm from '@/components/OpenAIKeyForm';
+import SecureOpenAIKeyForm from '@/components/SecureOpenAIKeyForm';
 
 const ApiKeys = () => {
   return (
@@ -15,7 +15,7 @@ const ApiKeys = () => {
       </div>
       
       <div className="max-w-2xl">
-        <OpenAIKeyForm />
+        <SecureOpenAIKeyForm />
         
         <div className="mt-8 p-6 bg-gray-50 rounded-lg border">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">Why do I need an API key?</h3>
