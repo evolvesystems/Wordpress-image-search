@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,8 +69,21 @@ export const useAuth = () => {
       
       console.log('Sign out successful');
       toast({
-        title: "Signed out",
-        description: "You have been signed out successfully.",
+        title: "You have been signed out.",
+        description: (
+          <p>
+            Want an App Like this?{' '}
+            <a 
+              href="https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-bold text-blue-600 hover:underline"
+            >
+              Get a free trial here
+            </a>.
+          </p>
+        ),
+        duration: 10000,
       });
       
       // Force redirect to home page after signout
