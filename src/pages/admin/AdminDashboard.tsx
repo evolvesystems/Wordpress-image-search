@@ -30,9 +30,15 @@ const AdminDashboard = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Robust null check: Only use data if it's not null
-      if (!error && data !== null && typeof data === 'object' && 'openai_api_key' in data) {
-        const apiKey = (data as { openai_api_key?: string | null }).openai_api_key;
+      // Robust null check and assign to a temp variable for type safety
+      if (
+        !error &&
+        data !== null &&
+        typeof data === 'object' &&
+        'openai_api_key' in data
+      ) {
+        const safeData = data as { openai_api_key?: string | null };
+        const apiKey = safeData.openai_api_key;
         setHasAPIKey(Boolean(apiKey));
       } else {
         setHasAPIKey(false);
