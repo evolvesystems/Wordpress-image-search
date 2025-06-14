@@ -70,7 +70,7 @@ const OpenAIKeyForm = () => {
           user_id: user.id,
           openai_api_key: apiKey.trim(),
           updated_at: new Date().toISOString(),
-        } as any);
+        } as any, { onConflict: "user_id" });
 
       if (error) throw error;
 
