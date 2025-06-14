@@ -8,61 +8,26 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Diagnostic: simple start log to prove entry
+  console.log("analyze-wordpress-image: function entry, method:", req.method);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get everything directly from request body
-    const { imageUrl, openai_api_key } = await req.json();
-    if (!imageUrl || !openai_api_key) throw new Error("Missing imageUrl or openai_api_key");
-
-    // Download the image as blob
-    const imgResp = await fetch(imageUrl);
-    if (!imgResp.ok) throw new Error(`Could not fetch image: ${imgResp.status}`);
-    const imgArrayBuffer = await imgResp.arrayBuffer();
-    const imgBase64 = btoa(String.fromCharCode(...new Uint8Array(imgArrayBuffer)));
-
-    // Call OpenAI Vision endpoint
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: "POST",
-      headers: {
-        'Authorization': `Bearer ${openai_api_key}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an agricultural image analysis expert. Analyze the image and return ONLY a comma-separated list of relevant tags for agricultural/farming context. Focus on: crops, animals, equipment, soil, weather, farming activities, landscape features. Keep tags simple and specific. Maximum 8 tags.'
-          },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: 'Analyze this agricultural image and provide relevant tags:' },
-              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imgBase64}` } }
-            ]
-          }
-        ],
-        max_tokens: 100
-      })
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`OpenAI Vision error: ${response.status} ${errText}`);
+    // Basic parse and check for expected keys (no extra logic)
+    const body = await req.json();
+    if (!body?.imageUrl || !body?.openai_api_key) {
+      throw new Error("Missing imageUrl or openai_api_key");
     }
-
-    const data = await response.json();
-    const tags = data.choices?.[0]?.message?.content?.trim() || '';
-
-    return new Response(JSON.stringify({ tags }), {
+    // Respond with dummy tags for testing recursion only
+    return new Response(JSON.stringify({ tags: "diagnostic-test, recursion-check, success" }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (err: any) {
-    console.error('Error analyzing WordPress image:', err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error('Diagnostic error in analyze-wordpress-image:', err);
+    return new Response(JSON.stringify({ error: err.message || "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
