@@ -21,12 +21,18 @@ const AdminDashboard = () => {
   useEffect(() => {
     const checkAPIKey = async () => {
       if (!user) return setHasAPIKey(false);
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('user_settings' as any)
         .select('openai_api_key')
         .eq('user_id', user.id)
         .maybeSingle();
-      setHasAPIKey(!!(data && data.openai_api_key));
+
+      if (error || !data || typeof data !== 'object') {
+        setHasAPIKey(false);
+        return;
+      }
+      // Only set if key is present and non-empty
+      setHasAPIKey(!!data.openai_api_key);
     };
     checkAPIKey();
   }, [user]);
@@ -112,4 +118,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
