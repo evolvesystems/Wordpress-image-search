@@ -22,30 +22,27 @@ const EmbedDemo = () => {
 <script>
   (function() {
     function initAIChat() {
-      // Create container
-      var container = document.createElement('div');
-      container.id = 'ai-chat-widget';
-      document.body.appendChild(container);
-      
       // Load the widget script
       var script = document.createElement('script');
       script.src = '${window.location.origin}/embed.js';
       script.onload = function() {
-        window.AIChat.init({
-          apiEndpoint: '${SUPABASE_URL}/functions/v1/chat-embed',
-          apiKey: '${SUPABASE_PUBLISHABLE_KEY}',
-          primaryColor: '${config.primaryColor}',
-          position: '${config.position}',
-          siteName: '${config.siteName}'
-        });
+        if (window.AIChat) {
+          window.AIChat.init({
+            apiEndpoint: '${SUPABASE_URL}/functions/v1/chat-embed',
+            apiKey: '${SUPABASE_PUBLISHABLE_KEY}',
+            primaryColor: '${config.primaryColor}',
+            position: '${config.position}',
+            siteName: '${config.siteName}'
+          });
+        }
       };
-      document.head.appendChild(script);
+      document.body.appendChild(script);
     }
 
-    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    if (document.readyState === 'complete') {
       initAIChat();
     } else {
-      document.addEventListener('DOMContentLoaded', initAIChat, { once: true });
+      window.addEventListener('load', initAIChat, { once: true });
     }
   })();
 </script>`;

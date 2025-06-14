@@ -2,10 +2,20 @@
   'use strict';
   
   // Prevent multiple initializations
-  if (window.AIChat) return;
+  if (window.AIChat) {
+    // If AIChat is already on the window, it might be from a previous script instance.
+    // The init function will be called by the new script's onload.
+    return;
+  }
   
   window.AIChat = {
     init: function(config) {
+      // Clean up any old widget instances
+      const oldWidget = document.getElementById('ai-chat-widget-container');
+      if (oldWidget) {
+        oldWidget.parentNode.removeChild(oldWidget);
+      }
+
       config = config || {};
       
       // Default configuration
@@ -59,10 +69,9 @@
       `;
       
       // Insert chat widget into page
-      const container = document.getElementById('ai-chat-widget') || document.body;
       const div = document.createElement('div');
       div.innerHTML = chatHTML;
-      container.appendChild(div);
+      document.body.appendChild(div);
       
       // Get elements
       const button = document.getElementById('ai-chat-button');
