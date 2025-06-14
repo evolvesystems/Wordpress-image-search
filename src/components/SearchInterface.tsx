@@ -116,6 +116,18 @@ const SearchInterface = () => {
                     {img.caption?.rendered && (
                       <div className="text-xs text-gray-500" dangerouslySetInnerHTML={{ __html: img.caption.rendered }} />
                     )}
+                    {img.link && (
+                      <a
+                        href={img.link}
+                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View this image in WordPress"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth={2} d="M10 14L21 3m0 0v7m0-7h-7M13 10v11a1 1 0 001 1h6a1 1 0 001-1V8m-8 6H4a1 1 0 01-1-1v-5a1 1 0 011-1h5a1 1 0 011 1v5a1 1 0 01-1 1z"/></svg>
+                        View page
+                      </a>
+                    )}
                   </div>
                 </Card>
               ))}
