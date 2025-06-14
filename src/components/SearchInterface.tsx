@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Camera, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,28 +7,35 @@ import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useWordPressUserSettings } from '@/hooks/useWordPressUserSettings';
+import { useWordPressImageSearch } from '@/hooks/useWordPressImageSearch';
 
-interface SearchResult {
-  id: string;
-  url: string;
-  title: string;
-  description: string;
-  confidence: number;
-  tags: string[];
-}
-
-const SearchInterface = ({ onSearch, isLoading, results }: {
-  onSearch: (query: string) => void;
-  isLoading: boolean;
-  results: SearchResult[];
-}) => {
+const SearchInterface = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  
+  const { settings, loading: wpLoading } = useWordPressUserSettings();
+  const { results, isLoading, error, searchImages } = useWordPressImageSearch();
+
+  const popularSearches = [
+    'red soil', 'working dog', 'cattle grazing', 'wheat field', 
+    'farm machinery', 'irrigation', 'sheep flock', 'harvest time'
+  ];
+
+  const [searchMode, setSearchMode] = useState<'wordpress' | 'local' | 'none'>('none');
+
+  useEffect(() => {
+    if (user && settings?.wordpress_url) {
+      setSearchMode('wordpress');
+    } else if (user) {
+      setSearchMode('local');
+    } else {
+      setSearchMode('none');
+    }
+  }, [user, settings]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!user) {
       toast({
         title: "Sign in to search images",
@@ -36,15 +43,13 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
       });
       return;
     }
-    
-    // Redirect to admin panel for authenticated users
-    navigate('/admin');
+    if (searchMode === 'wordpress' && settings?.wordpress_url && query) {
+      searchImages(settings.wordpress_url, query);
+    } else {
+      // Default flow: redirect to dashboard
+      navigate('/admin');
+    }
   };
-
-  const popularSearches = [
-    'red soil', 'working dog', 'cattle grazing', 'wheat field', 
-    'farm machinery', 'irrigation', 'sheep flock', 'harvest time'
-  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -62,13 +67,18 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
           </div>
           <Button 
             type="submit" 
-            disabled={isLoading}
+            disabled={isLoading || wpLoading}
             className="px-8 py-3 bg-green-600 hover:bg-green-700"
           >
             {!user ? (
               <>
                 <LogIn className="w-5 h-5 mr-2" />
                 Sign In to Search
+              </>
+            ) : searchMode === 'wordpress' ? (
+              <>
+                <Camera className="w-5 h-5 mr-2" />
+                Search WordPress Images
               </>
             ) : (
               <>
@@ -85,6 +95,7 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
             {popularSearches.map((search) => (
               <button
                 key={search}
+                type="button"
                 onClick={() => setQuery(search)}
                 className="px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
               >
@@ -94,6 +105,41 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
           </div>
         </div>
 
+        {searchMode === 'wordpress' && results.length > 0 && (
+          <div className="mt-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {results.map(img => (
+                <Card key={img.id} className="overflow-hidden border">
+                  <img src={img.source_url} alt={img.alt_text || img.title?.rendered} className="w-full h-32 object-cover bg-gray-100" />
+                  <div className="p-2">
+                    <div className="text-xs font-medium">{img.title?.rendered}</div>
+                    {img.caption?.rendered && (
+                      <div className="text-xs text-gray-500" dangerouslySetInnerHTML={{ __html: img.caption.rendered }} />
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+        {searchMode === 'wordpress' && error && (
+          <div className="text-red-600 text-sm mt-4">{error}</div>
+        )}
+        {user && searchMode === 'local' && (
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-3 mb-3">
+              <Search className="w-5 h-5 text-yellow-600" />
+              <h3 className="font-semibold text-yellow-800">WordPress Search Not Set Up</h3>
+            </div>
+            <p className="text-yellow-700 text-sm mb-2">
+              To search images from your WordPress site directly, please{' '}
+              <a href="/admin/wordpress-search-setup" className="text-green-700 underline">complete the WordPress setup here</a>.
+            </p>
+            <p className="text-yellow-700 text-sm">
+              Or, continue to your dashboard to upload and search your local images.
+            </p>
+          </div>
+        )}
         {!user && (
           <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center gap-3 mb-3">

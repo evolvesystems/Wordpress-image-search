@@ -1,17 +1,32 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWordPressImageSearch } from "@/hooks/useWordPressImageSearch";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Save } from "lucide-react";
+import { useWordPressUserSettings } from "@/hooks/useWordPressUserSettings";
 
-const DEFAULT_WP_URL = "https://wordpress.org/news"; // demo source, users can change
+const DEFAULT_WP_URL = "https://wordpress.org/news"; // demo source
 
 const WordPressSearchSetup = () => {
+  const { settings, setSettings, loading: settingsLoading, error: settingsError, reload } = useWordPressUserSettings();
   const [wordpressUrl, setWordpressUrl] = useState(DEFAULT_WP_URL);
   const [query, setQuery] = useState("");
   const { results, isLoading, error, searchImages } = useWordPressImageSearch();
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (settings?.wordpress_url) setWordpressUrl(settings.wordpress_url);
+  }, [settings]);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!wordpressUrl) return;
+    await setSettings(wordpressUrl);
+    setSavedMessage("WordPress URL saved!");
+    setTimeout(() => setSavedMessage(null), 1800);
+    reload();
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +58,23 @@ const WordPressSearchSetup = () => {
             <strong>Advanced:</strong> For protected/private sites, you may need to install a plugin to enable public media REST API access.
           </li>
         </ol>
-        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 items-stretch mb-3">
+        <form onSubmit={handleSave} className="flex flex-col md:flex-row gap-3 items-stretch mb-3">
           <Input
             value={wordpressUrl}
             onChange={e => setWordpressUrl(e.target.value)}
             placeholder="WordPress site URL (e.g., https://your-site.com)"
             className="flex-1"
           />
+          <Button type="submit" disabled={settingsLoading || !wordpressUrl} className="flex gap-2">
+            <Save className="w-4 h-4" />
+            {settingsLoading ? "Saving..." : "Save URL"}
+          </Button>
+        </form>
+        {savedMessage && <div className="text-green-700 text-sm">{savedMessage}</div>}
+        {settingsError && (
+          <div className="text-red-600 text-sm">{settingsError}</div>
+        )}
+        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 items-stretch mb-3">
           <Input
             value={query}
             onChange={e => setQuery(e.target.value)}

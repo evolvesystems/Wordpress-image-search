@@ -72,6 +72,30 @@ export type Database = {
         }
         Relationships: []
       }
+      wordpress_user_settings: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          wordpress_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          wordpress_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          wordpress_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
