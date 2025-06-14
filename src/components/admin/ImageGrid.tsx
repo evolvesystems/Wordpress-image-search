@@ -9,10 +9,15 @@ interface ImageData {
   filename: string;
   title: string;
   description: string;
+  alt_text?: string;
+  caption?: string;
   tags: string[];
   storage_path: string;
   uploaded_at: string;
   file_size: number;
+  width?: number;
+  height?: number;
+  mime_type?: string;
 }
 
 interface ImageGridProps {
@@ -23,12 +28,22 @@ interface ImageGridProps {
 }
 
 const ImageGrid = ({ images, filteredImages, onDeleteImage, formatFileSize }: ImageGridProps) => {
+  const totalPixels = images.reduce((sum, img) => {
+    if (img.width && img.height) {
+      return sum + (img.width * img.height);
+    }
+    return sum;
+  }, 0);
+
+  const megapixels = (totalPixels / 1000000).toFixed(1);
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">All Images ({filteredImages.length})</h3>
-        <div className="text-sm text-gray-600">
-          Total: {formatFileSize(images.reduce((sum, img) => sum + img.file_size, 0))}
+        <div className="text-sm text-gray-600 space-x-4">
+          <span>Total: {formatFileSize(images.reduce((sum, img) => sum + img.file_size, 0))}</span>
+          {totalPixels > 0 && <span>~{megapixels}MP</span>}
         </div>
       </div>
 

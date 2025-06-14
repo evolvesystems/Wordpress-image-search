@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -85,11 +84,18 @@ const AdminImages = () => {
     }
   };
 
-  const filteredImages = images.filter(image => 
-    image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    image.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    image.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredImages = images.filter(image => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      image.title.toLowerCase().includes(searchLower) ||
+      image.description.toLowerCase().includes(searchLower) ||
+      (image.alt_text && image.alt_text.toLowerCase().includes(searchLower)) ||
+      (image.caption && image.caption.toLowerCase().includes(searchLower)) ||
+      image.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+      image.filename.toLowerCase().includes(searchLower) ||
+      (image.mime_type && image.mime_type.toLowerCase().includes(searchLower))
+    );
+  });
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
