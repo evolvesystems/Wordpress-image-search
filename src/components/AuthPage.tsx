@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,19 +54,27 @@ const AuthPage = () => {
     setIsLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ 
+          email, 
+          password 
+        });
         if (error) throw error;
+        
         toast({
           title: "Welcome back!",
           description: "Signed in successfully.",
         });
         // Redirect to admin dashboard after login
-        setTimeout(() => navigate('/admin'), 200);
+        navigate('/admin');
       } else {
-        // Sign up without forcing email confirmation
+        // Sign up with proper redirect URL
+        const redirectUrl = `${window.location.origin}/admin`;
         const { error } = await supabase.auth.signUp({
           email,
-          password
+          password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
         });
 
         if (error) throw error;
