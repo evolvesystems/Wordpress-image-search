@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
@@ -15,6 +16,16 @@ const UserMenu = () => {
         <User className="w-5 h-5" />
         <span className="text-sm">{user.email}</span>
       </div>
+      <Link to="/admin">
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-white border-white hover:bg-white hover:text-green-600"
+        >
+          <Settings className="w-4 h-4 mr-1" />
+          Admin
+        </Button>
+      </Link>
       <Button
         variant="outline"
         size="sm"

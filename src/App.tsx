@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminImages from "./pages/admin/AdminImages";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +21,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+          <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          <Route path="/admin/images" element={<AdminLayout><AdminImages /></AdminLayout>} />
+          <Route path="/admin/api-keys" element={<AdminLayout><div className="p-6"><h1 className="text-3xl font-bold">API Keys Management</h1><p className="text-gray-600 mt-2">API key management functionality coming soon.</p></div></AdminLayout>} />
+          <Route path="/admin/settings" element={<AdminLayout><div className="p-6"><h1 className="text-3xl font-bold">Admin Settings</h1><p className="text-gray-600 mt-2">Admin settings functionality coming soon.</p></div></AdminLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

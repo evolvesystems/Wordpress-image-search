@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Search, Loader2, Camera } from 'lucide-react';
+import { Search, Loader2, Camera, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SearchResult {
   id: string;
@@ -20,10 +21,21 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
   isLoading: boolean;
   results: SearchResult[];
 }) => {
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to search through images. You'll also need to configure your OpenAI API key.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (query.trim()) {
       onSearch(query.trim());
     } else {
@@ -38,6 +50,29 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
     'red soil', 'working dog', 'cattle grazing', 'wheat field', 
     'farm machinery', 'irrigation', 'sheep flock', 'harvest time'
   ];
+
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="p-8 mb-8 bg-white shadow-lg text-center">
+          <LogIn className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+          <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+          <p className="text-gray-600 mb-6">
+            You need to sign in to search through agricultural images. 
+            After signing in, you'll also need to configure your OpenAI API key to enable AI-powered search.
+          </p>
+          <div className="text-sm text-gray-500">
+            <p className="mb-2">What you can do after signing in:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Upload and manage your agricultural images</li>
+              <li>Search through images using natural language</li>
+              <li>Use AI-powered image analysis and tagging</li>
+            </ul>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

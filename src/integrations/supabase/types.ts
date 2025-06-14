@@ -20,6 +20,7 @@ export type Database = {
           tags: string[] | null
           title: string | null
           uploaded_at: string
+          user_id: string | null
         }
         Insert: {
           description?: string | null
@@ -31,6 +32,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           uploaded_at?: string
+          user_id?: string | null
         }
         Update: {
           description?: string | null
@@ -42,6 +44,31 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           uploaded_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          id: string
+          openai_api_key: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          openai_api_key?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          openai_api_key?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
