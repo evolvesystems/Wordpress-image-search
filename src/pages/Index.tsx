@@ -28,7 +28,8 @@ const Index = () => {
   // For authenticated users, show the landing page but redirect them to admin on search
   return (
     <div className="min-h-screen bg-white">
-      <div className="w-full px-4 pt-5 flex justify-end">
+      {/* Removed AI button: AI chat is now a global bubble */}
+      {/* <div className="w-full px-4 pt-5 flex justify-end">
         <a href="/ai-chat">
           <Button
             variant="outline"
@@ -39,7 +40,7 @@ const Index = () => {
             AI Chat Assistant
           </Button>
         </a>
-      </div>
+      </div> */}
       <ImageSearchHeader />
 
       <SearchInterface />

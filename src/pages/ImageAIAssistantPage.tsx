@@ -1,7 +1,4 @@
 
-import React from "react";
-import ImageAIAssistant from "@/components/ImageAIAssistant";
-
-const ImageAIAssistantPage = () => <ImageAIAssistant />;
-
+// Page is no longer used; remove its content.
+const ImageAIAssistantPage = () => null;
 export default ImageAIAssistantPage;
