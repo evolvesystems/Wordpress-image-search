@@ -15,6 +15,7 @@ import ApiKeys from "./pages/admin/ApiKeys";
 import WordPressSearchSetup from "./pages/admin/WordPressSearchSetup";
 import ImageAIAssistant from "@/components/ImageAIAssistant";
 import AuthPage from "@/components/AuthPage";
+import EmbedDemo from "./pages/EmbedDemo";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/embed-demo" element={<EmbedDemo />} />
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/account" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/images" element={<AdminLayout><AdminImages /></AdminLayout>} />

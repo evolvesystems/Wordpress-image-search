@@ -7,7 +7,8 @@ import {
   Image, 
   Home,
   LogOut,
-  User
+  User,
+  Code
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,6 +28,11 @@ const adminMenuItems = [
     title: "WordPress Setup",
     url: "/admin/wordpress-search-setup",
     icon: Image,
+  },
+  {
+    title: "Embed Widget",
+    url: "/embed-demo",
+    icon: Code,
   },
 ];
 
