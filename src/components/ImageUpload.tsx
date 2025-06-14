@@ -1,0 +1,183 @@
+
+import React, { useState } from 'react';
+import { Upload, X, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface UploadedImage {
+  file: File;
+  preview: string;
+  title: string;
+  description: string;
+  tags: string;
+}
+
+const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => {
+  const [images, setImages] = useState<UploadedImage[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const newImages = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      title: '',
+      description: '',
+      tags: ''
+    }));
+    setImages(prev => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const updateImageData = (index: number, field: keyof UploadedImage, value: string) => {
+    setImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, [field]: value } : img
+    ));
+  };
+
+  const uploadImages = async () => {
+    if (images.length === 0) return;
+
+    setIsUploading(true);
+    let successCount = 0;
+
+    for (const image of images) {
+      try {
+        const fileName = `${Date.now()}-${image.file.name}`;
+        const filePath = `uploads/${fileName}`;
+
+        // Upload to storage
+        const { error: uploadError } = await supabase.storage
+          .from('agri-images')
+          .upload(filePath, image.file);
+
+        if (uploadError) throw uploadError;
+
+        // Save metadata to database
+        const { error: dbError } = await supabase
+          .from('uploaded_images')
+          .insert({
+            filename: image.file.name,
+            storage_path: filePath,
+            title: image.title || image.file.name,
+            description: image.description,
+            tags: image.tags ? image.tags.split(',').map(tag => tag.trim()) : [],
+            file_size: image.file.size,
+            mime_type: image.file.type
+          });
+
+        if (dbError) throw dbError;
+        successCount++;
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload failed",
+          description: `Failed to upload ${image.file.name}`,
+          variant: "destructive",
+        });
+      }
+    }
+
+    setIsUploading(false);
+    
+    if (successCount > 0) {
+      toast({
+        title: "Upload successful",
+        description: `Successfully uploaded ${successCount} image${successCount > 1 ? 's' : ''}`,
+      });
+      setImages([]);
+      onUploadComplete();
+    }
+  };
+
+  return (
+    <Card className="p-6 mb-8">
+      <h2 className="text-2xl font-bold mb-4">Upload Agricultural Images</h2>
+      
+      <div className="mb-4">
+        <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+          <div className="flex flex-col items-center">
+            <Plus className="w-8 h-8 text-gray-400 mb-2" />
+            <span className="text-gray-500">Click to select images</span>
+          </div>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </label>
+      </div>
+
+      {images.length > 0 && (
+        <div className="space-y-4 mb-4">
+          {images.map((image, index) => (
+            <div key={index} className="flex gap-4 p-4 border rounded-lg">
+              <img 
+                src={image.preview} 
+                alt="Preview" 
+                className="w-20 h-20 object-cover rounded"
+              />
+              <div className="flex-1 space-y-2">
+                <Input
+                  placeholder="Image title"
+                  value={image.title}
+                  onChange={(e) => updateImageData(index, 'title', e.target.value)}
+                />
+                <Input
+                  placeholder="Description"
+                  value={image.description}
+                  onChange={(e) => updateImageData(index, 'description', e.target.value)}
+                />
+                <Input
+                  placeholder="Tags (comma separated)"
+                  value={image.tags}
+                  onChange={(e) => updateImageData(index, 'tags', e.target.value)}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => removeImage(index)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {images.length > 0 && (
+        <Button 
+          onClick={uploadImages}
+          disabled={isUploading}
+          className="w-full"
+        >
+          {isUploading ? (
+            <>
+              <Upload className="w-4 h-4 mr-2 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Upload className="w-4 h-4 mr-2" />
+              Upload {images.length} Image{images.length > 1 ? 's' : ''}
+            </>
+          )}
+        </Button>
+      )}
+    </Card>
+  );
+};
+
+export default ImageUpload;
