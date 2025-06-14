@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,26 +5,40 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from "react-router-dom";
 
-const getURLParam = (name: string) => {
-  if (typeof window === "undefined") return null;
+function getModeParam(): "login" | "signup" {
+  if (typeof window === "undefined") return "login";
   const params = new URLSearchParams(window.location.search);
-  return params.get(name);
-};
+  return params.get("mode") === "signup" ? "signup" : "login";
+}
 
 const AuthPage = () => {
-  const initialMode = getURLParam("signup") === "1" ? false : true;
-  const [isLogin, setIsLogin] = useState(initialMode);
+  const [mode, setMode] = useState<"login" | "signup">(getModeParam());
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [signUpComplete, setSignUpComplete] = useState(false);
+  const navigate = useNavigate();
 
-  // Update mode if user lands via `/auth?signup=1`
+  // Keep mode in sync with URL
   useEffect(() => {
-    if (getURLParam("signup") === "1") setIsLogin(false);
-    else setIsLogin(true);
-  }, []);
+    const desiredMode = getModeParam();
+    if (mode !== desiredMode) setMode(desiredMode);
+    // eslint-disable-next-line
+  }, [window.location.search]);
+
+  // Helper to update mode and push URL params
+  const updateMode = (newMode: "login" | "signup") => {
+    setMode(newMode);
+    const url = new URL(window.location.href);
+    url.searchParams.set("mode", newMode);
+    window.history.replaceState({}, '', url.toString());
+    setSignUpComplete(false);
+    setEmail('');
+    setPassword('');
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,43 +50,37 @@ const AuthPage = () => {
       });
       return;
     }
-
     setIsLoading(true);
-
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-
         toast({
           title: "Welcome back!",
           description: "Signed in successfully.",
         });
+        // Redirect to homepage
+        setTimeout(() => navigate('/'), 200);
       } else {
+        // Must set redirect URL for email confirmation
         const redirectUrl = `${window.location.origin}/`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
+          options: { emailRedirectTo: redirectUrl }
         });
 
         if (error) throw error;
 
+        setSignUpComplete(true);
         toast({
           title: "Account created!",
-          description: "Check your email to confirm your account.",
+          description: "Check your email to confirm your account, then return here to sign in.",
         });
       }
     } catch (error: any) {
-      console.error('Auth error:', error);
       toast({
-        title: isLogin ? "Sign in failed" : "Sign up failed",
+        title: mode === "login" ? "Sign in failed" : "Sign up failed",
         description: error.message || "Something went wrong",
         variant: "destructive",
       });
@@ -85,18 +92,31 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-600 to-emerald-700 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-7">
           <User className="w-12 h-12 mx-auto mb-4 text-green-600" />
           <h1 className="text-2xl font-bold mb-2">
-            {isLogin ? 'Sign in to WordPress + AI' : 'Create Your WordPress + AI Account'}
+            {mode === "login"
+              ? 'Sign in to WordPress + AI'
+              : 'Create Your WordPress + AI Account'}
           </h1>
-          <p className="text-gray-600">
-            {isLogin 
-              ? 'Login to supercharge your WordPress with AI image search.' 
-              : 'Sign up free and experience next-gen WordPress image management.'}
+          <p className="text-gray-600 mb-1">
+            {mode === "login"
+              ? 'Access fast, smart AI for WordPress media search.'
+              : 'Sign up free to experience next-gen WordPress image management.'}
           </p>
         </div>
-
+        {mode === "signup" && signUpComplete ? (
+          <div className="text-center">
+            <p className="mb-6 text-green-800 font-semibold">
+              🎉 Account created!<br />
+              Please check your email and click the confirmation link.
+            </p>
+            <Button className="w-full bg-green-600 hover:bg-green-700 mt-2" onClick={() => updateMode("login")}>
+              <LogIn className="w-4 h-4 mr-2" />
+              Go to Login
+            </Button>
+          </div>
+        ) : (
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
             <Input
@@ -113,7 +133,7 @@ const AuthPage = () => {
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              autoComplete={isLogin ? "current-password" : "new-password"}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pr-10"
@@ -124,18 +144,19 @@ const AuthPage = () => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isLoading}
           >
             {isLoading ? (
               "Loading..."
-            ) : isLogin ? (
+            ) : mode === "login" ? (
               <>
                 <LogIn className="w-4 h-4 mr-2" />
                 Sign In
@@ -148,17 +169,25 @@ const AuthPage = () => {
             )}
           </Button>
         </form>
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => setIsLogin((prev) => !prev)}
-            className="text-green-600 hover:text-green-700 font-medium"
-          >
-            {isLogin 
-              ? "Don't have an account? Create one" 
-              : "Already have an account? Sign in"
-            }
-          </button>
+        )}
+        <div className="mt-7 text-center">
+          {mode === "login" ? (
+            <button
+              type="button"
+              onClick={() => updateMode("signup")}
+              className="text-green-600 hover:text-green-700 font-medium"
+            >
+              Don't have an account? Create one
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => updateMode("login")}
+              className="text-green-600 hover:text-green-700 font-medium"
+            >
+              Already have an account? Sign in
+            </button>
+          )}
         </div>
       </Card>
     </div>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Leaf } from "lucide-react";
@@ -12,13 +11,13 @@ const HeaderNav = () => (
       </Link>
       <nav className="flex items-center gap-4">
         <Link
-          to="/auth"
+          to="/auth?mode=login"
           className="px-4 py-2 rounded-lg text-green-900 bg-green-100 font-semibold hover:bg-green-200 hover:text-green-800 transition shadow-sm"
         >
           Login
         </Link>
         <Link
-          to="/auth"
+          to="/auth?mode=signup"
           className="px-4 py-2 rounded-lg font-semibold border border-green-200 text-green-100 hover:bg-white hover:text-green-700 transition shadow-sm"
         >
           Sign Up
