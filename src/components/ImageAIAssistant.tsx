@@ -10,15 +10,15 @@ import { Settings } from "lucide-react";
 
 const SYSTEM_MESSAGE = "You are a helpful assistant for finding agricultural images. When a user asks a question or gives a search, help them find relevant images from their WordPress site. If the API key is not set, let them know and suggest tapping the settings icon.";
 
-const demoWelcome = [
+type Message = { role: "user" | "bot"; content: string };
+
+const demoWelcome: Message[] = [
   {
     role: "bot",
     content:
       "👋 Hi! I'm your AI Image Assistant. Ask me for an image (e.g., 'Show me a wheat field', 'Find drone photos'), and I'll help you search your WordPress library.\n\nTap the settings ⚙️ icon to connect your API key if you haven't yet.",
   },
 ];
-
-type Message = { role: "user" | "bot"; content: string };
 
 const ImageAIAssistant: React.FC = () => {
   const [input, setInput] = useState("");
@@ -196,3 +196,4 @@ const ImageAIAssistant: React.FC = () => {
 };
 
 export default ImageAIAssistant;
+
