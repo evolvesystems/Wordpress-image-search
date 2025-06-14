@@ -30,11 +30,16 @@ const AdminDashboard = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error || !data || typeof data !== 'object') {
-        setHasAPIKey(false);
-      } else {
-        // Here, data is not null
+      // Only set if key is present and data is non-null and is an object
+      if (
+        !error &&
+        data &&
+        typeof data === 'object' &&
+        'openai_api_key' in data
+      ) {
         setHasAPIKey(!!data.openai_api_key);
+      } else {
+        setHasAPIKey(false);
       }
     };
     checkAPIKey();
