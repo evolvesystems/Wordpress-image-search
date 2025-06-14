@@ -43,7 +43,6 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
   };
 
   const handleDownload = () => {
-    // download the image as a file
     const link = document.createElement("a");
     link.href = img.source_url;
     link.download = img.title?.rendered || "image";
@@ -64,13 +63,13 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
   };
 
   return (
-    <Card className="overflow-hidden border flex flex-col h-full">
+    <Card className="overflow-hidden border flex flex-col bg-white">
       <img
         src={img.source_url}
         alt={img.alt_text || img.title?.rendered}
         className="w-full h-32 object-cover bg-gray-100"
       />
-      <div className="p-2 flex-1 flex flex-col">
+      <div className="p-2 flex flex-col flex-grow min-h-0">
         <div className="text-xs font-medium line-clamp-1">{img.title?.rendered}</div>
         {img.caption?.rendered && (
           <div
@@ -79,7 +78,6 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
           />
         )}
 
-        {/* Media details */}
         <div className="text-xs text-gray-600 space-x-2 mb-1">
           {img.media_details?.width && img.media_details?.height && (
             <span>
@@ -97,12 +95,13 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
             </span>
           )}
         </div>
-        
-        <div className="flex gap-1 mt-1">
+
+        {/* Action buttons: Download, Copy URL, Show Meta */}
+        <div className="flex gap-1 mt-1 flex-wrap">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 flex items-center gap-1"
+            className="flex-1 flex items-center gap-1 min-w-[90px]"
             onClick={handleDownload}
             type="button"
           >
@@ -112,7 +111,7 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 min-w-[90px]"
             onClick={handleCopy}
             type="button"
             title="Copy image direct URL"
@@ -127,7 +126,7 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 min-w-[40px]"
             type="button"
             title="Show all image meta data"
             onClick={() => setShowMeta((v) => !v)}
@@ -137,12 +136,13 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
         </div>
 
         {showMeta && (
-          <div className="rounded bg-gray-50 p-2 mt-2 text-xs text-gray-700 overflow-x-auto max-h-32">
+          <div className="rounded bg-gray-50 p-2 mt-2 text-xs text-gray-700 overflow-x-auto max-h-40">
             <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(img, null, 2)}</pre>
           </div>
         )}
 
-        <div className="flex-1" />
+        {/* Spacer pushes analyze and view link to the bottom */}
+        <div className="flex-grow" />
         {img.link && (
           <a
             href={img.link}
@@ -196,4 +196,3 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
 };
 
 export default WordPressImageAnalyzeCard;
-
