@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Upload, X, Plus, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,8 +47,8 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
       .eq('user_id', user.id)
       .maybeSingle();
     
-    if (error || !data?.openai_api_key) return null;
-    return data.openai_api_key;
+    if (error || !(data as any)?.openai_api_key) return null;
+    return (data as any).openai_api_key;
   };
 
   const analyzeImage = async (index: number) => {

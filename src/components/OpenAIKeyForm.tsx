@@ -33,8 +33,8 @@ const OpenAIKeyForm = () => {
         return;
       }
 
-      if (data?.openai_api_key) {
-        setApiKey(data.openai_api_key);
+      if ((data as any)?.openai_api_key) {
+        setApiKey((data as any).openai_api_key);
         setIsVisible(false);
       }
     } catch (error) {
