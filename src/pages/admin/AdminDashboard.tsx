@@ -108,7 +108,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex-shrink-0 mt-4 md:mt-0">
             <Button variant="outline" asChild>
-              <a href="/embed-demo">Get Embed Code</a>
+              <a href="/admin/embed-demo">Get Embed Code</a>
             </Button>
           </div>
         </div>
