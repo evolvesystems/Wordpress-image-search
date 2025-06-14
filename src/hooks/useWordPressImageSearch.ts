@@ -12,6 +12,7 @@ export interface WPImageResult {
     height?: number;
   };
   mime_type?: string;
+  link?: string; // <- Add the missing link property!
 }
 
 export const useWordPressImageSearch = () => {
