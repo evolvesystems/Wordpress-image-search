@@ -1,36 +1,56 @@
+
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWordPressImageSearch } from "@/hooks/useWordPressImageSearch";
 import { Loader2, Search, Save } from "lucide-react";
-import { useWordPressUserSettings } from "@/hooks/useWordPressUserSettings";
+import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAnalyzeWordPressImage } from "@/hooks/useAnalyzeWordPressImage";
+import { toast } from "@/hooks/use-toast";
 
-const DEFAULT_WP_URL = "https://wordpress.org/news"; // demo source
+const DEFAULT_WP_URL = "https://wordpress.org/news";
 
 const WordPressSearchSetup = () => {
-  const { settings, setSettings, loading: settingsLoading, error: settingsError, reload } = useWordPressUserSettings();
+  const { settings, loading, updateWordPressUrl } = useUserSettings();
   const [wordpressUrl, setWordpressUrl] = useState(DEFAULT_WP_URL);
   const [query, setQuery] = useState("");
   const { results, isLoading, error, searchImages } = useWordPressImageSearch();
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [aiTags, setAITags] = useState<{ [imgId: number]: string }>({});
   const [analyzingId, setAnalyzingId] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { analyzeImage, tags, isLoading: aiIsLoading, error: aiError, setTags } = useAnalyzeWordPressImage();
 
   useEffect(() => {
-    if (settings?.wordpress_url) setWordpressUrl(settings.wordpress_url);
+    if (settings?.wordpress_url) {
+      setWordpressUrl(settings.wordpress_url);
+    }
   }, [settings]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!wordpressUrl) return;
-    await setSettings(wordpressUrl);
-    setSavedMessage("WordPress URL saved!");
-    setTimeout(() => setSavedMessage(null), 1800);
-    reload();
+    
+    setIsSaving(true);
+    try {
+      await updateWordPressUrl(wordpressUrl);
+      setSavedMessage("WordPress URL saved!");
+      setTimeout(() => setSavedMessage(null), 1800);
+      toast({
+        title: "Success",
+        description: "WordPress URL saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save WordPress URL",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -57,8 +77,23 @@ const WordPressSearchSetup = () => {
         [analyzingId]: tags ?? ""
       }));
     }
-    // eslint-disable-next-line
-  }, [tags]);
+  }, [tags, analyzingId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-1">WordPress Image Search Integration</h1>
+          <p className="text-gray-700 mb-1">
+            Connect your WordPress site and search images directly via the WordPress REST API—no need to sync or import your full library.
+          </p>
+        </div>
+        <div className="animate-pulse">
+          <div className="h-64 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -91,15 +126,12 @@ const WordPressSearchSetup = () => {
             placeholder="WordPress site URL (e.g., https://your-site.com)"
             className="flex-1"
           />
-          <Button type="submit" disabled={settingsLoading || !wordpressUrl} className="flex gap-2">
+          <Button type="submit" disabled={isSaving || !wordpressUrl} className="flex gap-2">
             <Save className="w-4 h-4" />
-            {settingsLoading ? "Saving..." : "Save URL"}
+            {isSaving ? "Saving..." : "Save URL"}
           </Button>
         </form>
         {savedMessage && <div className="text-green-700 text-sm">{savedMessage}</div>}
-        {settingsError && (
-          <div className="text-red-600 text-sm">{settingsError}</div>
-        )}
         <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 items-stretch mb-3">
           <Input
             value={query}
@@ -137,7 +169,6 @@ const WordPressSearchSetup = () => {
                       View page
                     </a>
                   )}
-                  {/* Add Analyze with AI button & results */}
                   <div className="mt-2 flex flex-col gap-1">
                     <button
                       type="button"

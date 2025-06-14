@@ -4,47 +4,17 @@ import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { Key, Search, Image, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useWordPressUserSettings } from '@/hooks/useWordPressUserSettings';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useUserSettings } from '@/hooks/useUserSettings';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { settings } = useUserSettings();
 
   // WordPress setup status
-  const { settings } = useWordPressUserSettings();
   const isWordPressSet = !!settings?.wordpress_url;
 
   // API key setup status
-  const [hasAPIKey, setHasAPIKey] = useState<boolean>(false);
-
-  useEffect(() => {
-    const checkAPIKey = async () => {
-      if (!user) {
-        setHasAPIKey(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from('user_settings' as any)
-        .select('openai_api_key')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      // Fix for TS18047: TypeScript-safe null check for 'in' usage
-      if (
-        !error &&
-        data &&
-        typeof data === 'object' &&
-        Object.prototype.hasOwnProperty.call(data, 'openai_api_key')
-      ) {
-        const safeData = data as { openai_api_key?: string | null };
-        setHasAPIKey(Boolean(safeData.openai_api_key));
-      } else {
-        setHasAPIKey(false);
-      }
-    };
-    checkAPIKey();
-  }, [user]);
+  const hasAPIKey = !!settings?.openai_api_key;
 
   // Both steps complete -> ready to search & chat
   const readyToSearch = isWordPressSet && hasAPIKey;
