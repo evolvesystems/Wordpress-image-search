@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,9 +36,8 @@ const AdminDashboard = () => {
         typeof data === 'object' &&
         'openai_api_key' in data
       ) {
-        const safeData = data as { openai_api_key?: string | null }; // guaranteed non-null here
-        const apiKey = safeData.openai_api_key;
-        setHasAPIKey(Boolean(apiKey));
+        // Guaranteed non-null here
+        setHasAPIKey(Boolean((data as { openai_api_key?: string | null }).openai_api_key));
       } else {
         setHasAPIKey(false);
       }
@@ -128,4 +126,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
