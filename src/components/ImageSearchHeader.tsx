@@ -21,7 +21,8 @@ const ImageSearchHeader = () => {
         </div>
         <div className="text-center">
           <p className="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
-            Instantly search and organize images from your WordPress site. Find any photo just by describing what you need—by keyword, color, context, subject, or more.
+            Instantly search and organize images across your entire WordPress site—including finding where each image appears in posts, pages, and more. 
+            Just describe what you need; search by keyword, subject, color, or usage context.
           </p>
           <div className="flex justify-center items-center gap-6 text-green-100">
             <div className="flex items-center gap-2">
@@ -30,7 +31,7 @@ const ImageSearchHeader = () => {
             </div>
             <div className="flex items-center gap-2">
               <Search className="w-5 h-5" />
-              <span>AI-Powered Content Analysis</span>
+              <span>AI Chat Search Available—describe or ask about image usage</span>
             </div>
           </div>
         </div>
@@ -40,4 +41,3 @@ const ImageSearchHeader = () => {
 };
 
 export default ImageSearchHeader;
-
