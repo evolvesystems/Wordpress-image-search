@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 import { Input } from '@/components/ui/input';
@@ -147,7 +148,7 @@ const EmbedDemo = () => {
       {showTestChat && (
         <EmbeddableChat
           primaryColor={config.primaryColor}
-          position={config.position}
+          position="bottom-left"
           siteName={config.siteName}
         />
       )}

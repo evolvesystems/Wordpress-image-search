@@ -131,6 +131,7 @@
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${finalConfig.apiKey}`,
               'apikey': finalConfig.apiKey,
             },
             body: JSON.stringify({ message, siteName: finalConfig.siteName })

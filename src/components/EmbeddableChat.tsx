@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -51,6 +50,7 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           "apikey": SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({ message: value, siteName }),
