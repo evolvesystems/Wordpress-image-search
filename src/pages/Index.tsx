@@ -18,7 +18,7 @@ const Index = () => (
     <PricingOverview />
     <RealUseCases />
     <ClosingCTA />
-    {/* Floating AI Chat Assistant Button */}
+    {/* Floating green AI Chat Assistant Button (visually contrasting) */}
     <ImageAIAssistant />
   </div>
 );
