@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useWordPressImageSearch } from "@/hooks/useWordPressImageSearch";
 import { Loader2, Search, Save } from "lucide-react";
 import { useWordPressUserSettings } from "@/hooks/useWordPressUserSettings";
+import { useAnalyzeWordPressImage } from "@/hooks/useAnalyzeWordPressImage";
 
 const DEFAULT_WP_URL = "https://wordpress.org/news"; // demo source
 
@@ -14,6 +15,10 @@ const WordPressSearchSetup = () => {
   const [query, setQuery] = useState("");
   const { results, isLoading, error, searchImages } = useWordPressImageSearch();
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [aiTags, setAITags] = useState<{ [imgId: number]: string }>({});
+  const [analyzingId, setAnalyzingId] = useState<number | null>(null);
+
+  const { analyzeImage, tags, isLoading: aiIsLoading, error: aiError, setTags } = useAnalyzeWordPressImage();
 
   useEffect(() => {
     if (settings?.wordpress_url) setWordpressUrl(settings.wordpress_url);
@@ -33,6 +38,27 @@ const WordPressSearchSetup = () => {
     if (!wordpressUrl || !query) return;
     searchImages(wordpressUrl, query);
   };
+
+  const handleAnalyze = async (img: any) => {
+    setAnalyzingId(img.id);
+    setTags(null);
+    await analyzeImage(img.source_url);
+    setAITags(prev => ({
+      ...prev,
+      [img.id]: tags ?? ""
+    }));
+    setAnalyzingId(null);
+  };
+
+  useEffect(() => {
+    if (analyzingId && tags !== null) {
+      setAITags(prev => ({
+        ...prev,
+        [analyzingId]: tags ?? ""
+      }));
+    }
+    // eslint-disable-next-line
+  }, [tags]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -92,7 +118,7 @@ const WordPressSearchSetup = () => {
         <div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
             {results.map(img => (
-              <Card key={img.id} className="overflow-hidden border">
+              <Card key={img.id} className="overflow-hidden border relative group">
                 <img src={img.source_url} alt={img.alt_text || img.title?.rendered} className="w-full h-32 object-cover bg-gray-100" />
                 <div className="p-2">
                   <div className="text-xs font-medium">{img.title?.rendered}</div>
@@ -111,6 +137,23 @@ const WordPressSearchSetup = () => {
                       View page
                     </a>
                   )}
+                  {/* Add Analyze with AI button & results */}
+                  <div className="mt-2 flex flex-col gap-1">
+                    <button
+                      type="button"
+                      className={`text-xs px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 transition-colors ${analyzingId === img.id || aiIsLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                      onClick={() => handleAnalyze(img)}
+                      disabled={analyzingId === img.id || aiIsLoading}
+                    >
+                      {analyzingId === img.id || aiIsLoading ? "Analyzing..." : "Analyze Image (AI)"}
+                    </button>
+                    {aiError && analyzingId === img.id && (
+                      <div className="text-xs text-red-600">{aiError}</div>
+                    )}
+                    {aiTags[img.id] && (
+                      <div className="text-xs text-green-700 mt-1">AI Tags: {aiTags[img.id]}</div>
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}
