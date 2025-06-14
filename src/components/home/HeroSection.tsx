@@ -1,5 +1,5 @@
+
 import React from "react";
-import { motion } from "framer-motion";
 
 const stats = [
   { value: "5,000+", label: "WordPress Sites" },
@@ -31,12 +31,7 @@ const HeroSection = () => (
         </div>
       </div>
       <div className="flex-1 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10"
-        >
+        <div className="relative z-10 animate-fade-in">
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
             <div className="bg-blue-900/80 rounded-xl overflow-hidden">
               <div className="p-4 border-b border-blue-700">
@@ -60,7 +55,7 @@ const HeroSection = () => (
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
         <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-60"></div>
         <div className="absolute -top-6 -left-6 w-32 h-32 bg-blue-300 rounded-full blur-3xl opacity-60"></div>
       </div>
