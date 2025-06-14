@@ -1,5 +1,6 @@
 
 import React, { useRef, useEffect } from 'react';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 
 const EmbedDemo = () => {
   const embedCode = `<!-- AI Chat Widget -->
@@ -16,8 +17,8 @@ const EmbedDemo = () => {
       script.src = '${window.location.origin}/embed.js';
       script.onload = function() {
         window.AIChat.init({
-          apiEndpoint: '${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-embed',
-          apiKey: '${import.meta.env.VITE_SUPABASE_ANON_KEY}',
+          apiEndpoint: '${SUPABASE_URL}/functions/v1/chat-embed',
+          apiKey: '${SUPABASE_PUBLISHABLE_KEY}',
           primaryColor: '#16a34a',
           position: 'bottom-right',
           siteName: 'Your Website Name'

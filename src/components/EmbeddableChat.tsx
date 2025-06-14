@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
-import { MessageCircle, X, Settings } from "lucide-react";
+import { MessageCircle, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
 
 interface Message {
   role: "user" | "bot";
@@ -18,7 +19,7 @@ interface EmbeddableChatProps {
 }
 
 const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
-  apiEndpoint = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-embed`,
+  apiEndpoint = `${SUPABASE_URL}/functions/v1/chat-embed`,
   primaryColor = "#16a34a",
   position = "bottom-right",
   siteName = "Website"
@@ -50,7 +51,7 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+          "apikey": SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({ message: value, siteName }),
       });
