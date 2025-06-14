@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchResult {
   id: string;
@@ -22,6 +23,7 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
   results: SearchResult[];
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   
   const handleSearch = (e: React.FormEvent) => {
@@ -29,50 +31,20 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
     
     if (!user) {
       toast({
-        title: "Authentication Required",
-        description: "Please sign in to search through images. You'll also need to configure your OpenAI API key.",
-        variant: "destructive",
+        title: "Sign in to search images",
+        description: "You'll be redirected to your personal dashboard after signing in.",
       });
       return;
     }
     
-    if (query.trim()) {
-      onSearch(query.trim());
-    } else {
-      toast({
-        title: "Please enter a search term",
-        description: "Describe what you're looking for (e.g., 'red soil', 'working dog', 'wheat field')",
-      });
-    }
+    // Redirect to admin panel for authenticated users
+    navigate('/admin');
   };
 
   const popularSearches = [
     'red soil', 'working dog', 'cattle grazing', 'wheat field', 
     'farm machinery', 'irrigation', 'sheep flock', 'harvest time'
   ];
-
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-8 mb-8 bg-white shadow-lg text-center">
-          <LogIn className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
-          <p className="text-gray-600 mb-6">
-            You need to sign in to search through agricultural images. 
-            After signing in, you'll also need to configure your OpenAI API key to enable AI-powered search.
-          </p>
-          <div className="text-sm text-gray-500">
-            <p className="mb-2">What you can do after signing in:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Upload and manage your agricultural images</li>
-              <li>Search through images using natural language</li>
-              <li>Use AI-powered image analysis and tagging</li>
-            </ul>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -93,15 +65,15 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
             disabled={isLoading}
             className="px-8 py-3 bg-green-600 hover:bg-green-700"
           >
-            {isLoading ? (
+            {!user ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Analyzing...
+                <LogIn className="w-5 h-5 mr-2" />
+                Sign In to Search
               </>
             ) : (
               <>
                 <Camera className="w-5 h-5 mr-2" />
-                Search Images
+                Go to Dashboard
               </>
             )}
           </Button>
@@ -121,40 +93,25 @@ const SearchInterface = ({ onSearch, isLoading, results }: {
             ))}
           </div>
         </div>
-      </Card>
 
-      {results.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {results.map((result) => (
-            <Card key={result.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative">
-                <img 
-                  src={result.url} 
-                  alt={result.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm">
-                  {Math.round(result.confidence * 100)}% match
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{result.title}</h3>
-                <p className="text-gray-600 text-sm mb-3">{result.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {result.tags.map((tag) => (
-                    <span 
-                      key={tag}
-                      className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+        {!user && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-3 mb-3">
+              <LogIn className="w-5 h-5 text-green-600" />
+              <h3 className="font-semibold text-green-800">Ready to start searching?</h3>
+            </div>
+            <p className="text-green-700 text-sm mb-3">
+              Sign in to access your personal dashboard where you can:
+            </p>
+            <ul className="text-green-700 text-sm space-y-1 ml-4">
+              <li>• Upload and manage your agricultural images</li>
+              <li>• Search through images using natural language</li>
+              <li>• Configure AI-powered image analysis</li>
+              <li>• Track your uploads and search history</li>
+            </ul>
+          </div>
+        )}
+      </Card>
     </div>
   );
 };

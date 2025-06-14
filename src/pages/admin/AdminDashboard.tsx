@@ -4,6 +4,9 @@ import { Image, Key, Activity, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import ImageUpload from '@/components/ImageUpload';
+import SearchInterface from '@/components/SearchInterface';
+import { useImageSearch } from '@/hooks/useImageSearch';
 
 interface DashboardStats {
   totalImages: number;
@@ -13,6 +16,7 @@ interface DashboardStats {
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { searchImages, results, isLoading, loadAllImages } = useImageSearch();
   const [stats, setStats] = useState<DashboardStats>({
     totalImages: 0,
     hasApiKey: false,
@@ -23,6 +27,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (user) {
       loadDashboardStats();
+      loadAllImages();
     }
   }, [user]);
 
@@ -61,6 +66,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUploadComplete = () => {
+    loadAllImages();
+    loadDashboardStats();
   };
 
   const statCards = [
@@ -136,16 +146,26 @@ const AdminDashboard = () => {
         ))}
       </div>
 
+      {/* Image Upload Section */}
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Upload Images</h2>
+        <ImageUpload onUploadComplete={handleUploadComplete} />
+      </Card>
+
+      {/* Search Section */}
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Search Your Images</h2>
+        <SearchInterface 
+          onSearch={searchImages}
+          isLoading={isLoading}
+          results={results}
+        />
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
-              <span className="text-sm font-medium">Upload new images</span>
-              <a href="/" className="text-green-600 hover:text-green-700 text-sm font-medium">
-                Go to Search →
-              </a>
-            </div>
             <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
               <span className="text-sm font-medium">Configure API key</span>
               <a href="/admin/api-keys" className="text-green-600 hover:text-green-700 text-sm font-medium">
@@ -156,6 +176,12 @@ const AdminDashboard = () => {
               <span className="text-sm font-medium">Manage my images</span>
               <a href="/admin/images" className="text-green-600 hover:text-green-700 text-sm font-medium">
                 View →
+              </a>
+            </div>
+            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium">Account settings</span>
+              <a href="/admin/account" className="text-green-600 hover:text-green-700 text-sm font-medium">
+                Manage →
               </a>
             </div>
           </div>

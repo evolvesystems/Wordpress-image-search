@@ -4,23 +4,10 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthPage from '@/components/AuthPage';
 import ImageSearchHeader from '@/components/ImageSearchHeader';
 import SearchInterface from '@/components/SearchInterface';
-import ImageUpload from '@/components/ImageUpload';
 import TechnologyShowcase from '@/components/TechnologyShowcase';
-import { useImageSearch } from '@/hooks/useImageSearch';
 
 const Index = () => {
   const { user, loading } = useAuth();
-  const { searchImages, results, isLoading, loadAllImages } = useImageSearch();
-
-  useEffect(() => {
-    if (user) {
-      loadAllImages();
-    }
-  }, [user]);
-
-  const handleUploadComplete = () => {
-    loadAllImages();
-  };
 
   if (loading) {
     return (
@@ -37,19 +24,16 @@ const Index = () => {
     return <AuthPage />;
   }
 
+  // For authenticated users, show the landing page but redirect them to admin on search
   return (
     <div className="min-h-screen bg-white">
       <ImageSearchHeader />
       
-      <div className="container mx-auto px-4 py-8">
-        <ImageUpload onUploadComplete={handleUploadComplete} />
-        
-        <SearchInterface 
-          onSearch={searchImages}
-          isLoading={isLoading}
-          results={results}
-        />
-      </div>
+      <SearchInterface 
+        onSearch={() => {}} // Not used anymore, handled in component
+        isLoading={false}
+        results={[]}
+      />
       
       <TechnologyShowcase />
       
