@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
 export const useAnalyzeWordPressImage = () => {
@@ -15,15 +16,17 @@ export const useAnalyzeWordPressImage = () => {
     setError(null);
 
     try {
-      const resp = await fetch("https://zyvgxaghgmyjfkoxnxve.functions.supabase.co/analyze-wordpress-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl, user_id: user?.id }),
+      // Use supabase.functions.invoke to ensure auth header inclusion
+      const { data, error } = await supabase.functions.invoke('analyze-wordpress-image', {
+        body: { imageUrl, user_id: user?.id },
       });
-      if (!resp.ok) {
-        throw new Error(`Failed to analyze image (${resp.status})`);
+
+      if (error) {
+        throw new Error(error.message || "Failed to analyze image");
       }
-      const data = await resp.json();
+      if (!data || typeof data.tags !== "string") {
+        throw new Error("No tags returned from AI");
+      }
       setTags(data.tags);
     } catch (e: any) {
       setError(e?.message || "Failed to analyze image");
