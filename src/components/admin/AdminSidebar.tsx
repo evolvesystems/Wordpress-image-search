@@ -7,7 +7,6 @@ import {
   Image, 
   BarChart3, 
   Key, 
-  Shield,
   Home,
   LogOut
 } from 'lucide-react';
@@ -33,12 +32,7 @@ const adminMenuItems = [
     icon: BarChart3,
   },
   {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
-  },
-  {
-    title: "Images",
+    title: "My Images",
     url: "/admin/images",
     icon: Image,
   },
@@ -59,20 +53,20 @@ export function AdminSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar className="border-r">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center gap-2 text-lg font-bold">
-            <Shield className="w-5 h-5" />
-            Admin Panel
+          <SidebarGroupLabel className="flex items-center gap-2 text-lg font-bold px-2 py-4">
+            <BarChart3 className="w-5 h-5 text-green-600" />
+            <span className="text-green-600">My Dashboard</span>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/" className="flex items-center gap-2">
+                <SidebarMenuButton asChild className="mb-2">
+                  <Link to="/" className="flex items-center gap-2 text-gray-600 hover:text-green-600">
                     <Home className="w-4 h-4" />
-                    <span>Back to Main Site</span>
+                    <span>Back to Search</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -81,7 +75,7 @@ export function AdminSidebar() {
         </SidebarGroup>
         
         <SidebarGroup>
-          <SidebarGroupLabel>Admin Tools</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-gray-600 font-medium">Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {adminMenuItems.map((item) => (
@@ -89,6 +83,7 @@ export function AdminSidebar() {
                   <SidebarMenuButton 
                     asChild 
                     isActive={location.pathname === item.url}
+                    className="hover:bg-green-50 hover:text-green-700 data-[active=true]:bg-green-100 data-[active=true]:text-green-700"
                   >
                     <Link to={item.url}>
                       <item.icon className="w-4 h-4" />
@@ -102,15 +97,19 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter>
+      <SidebarFooter className="border-t bg-gray-50">
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="px-2 py-1 text-sm text-gray-600">
-              Signed in as: {user?.email}
+            <div className="px-2 py-2 text-sm text-gray-600 border-b border-gray-200 mb-2">
+              <div className="font-medium">{user?.email}</div>
+              <div className="text-xs text-gray-500">Personal Dashboard</div>
             </div>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut}>
+            <SidebarMenuButton 
+              onClick={signOut}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
             </SidebarMenuButton>

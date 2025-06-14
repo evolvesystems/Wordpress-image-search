@@ -1,50 +1,60 @@
 
 import React, { useEffect, useState } from 'react';
-import { Users, Image, Key, Activity } from 'lucide-react';
+import { Image, Key, Activity, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
 interface DashboardStats {
-  totalUsers: number;
   totalImages: number;
-  totalApiKeys: number;
-  recentActivity: number;
+  hasApiKey: boolean;
+  recentUploads: number;
 }
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
     totalImages: 0,
-    totalApiKeys: 0,
-    recentActivity: 0
+    hasApiKey: false,
+    recentUploads: 0
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardStats();
-  }, []);
+    if (user) {
+      loadDashboardStats();
+    }
+  }, [user]);
 
   const loadDashboardStats = async () => {
+    if (!user) return;
+
     try {
-      // Get total images for current user (since we don't have admin role system yet)
+      // Get user's images
       const { data: images } = await supabase
         .from('uploaded_images')
-        .select('id')
-        .eq('user_id', user?.id);
+        .select('id, uploaded_at')
+        .eq('user_id', user.id);
 
-      // Get user settings
+      // Get user's API key settings
       const { data: settings } = await supabase
         .from('user_settings')
-        .select('id')
-        .eq('user_id', user?.id);
+        .select('openai_api_key')
+        .eq('user_id', user.id)
+        .single();
+
+      // Calculate recent uploads (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const recentUploads = images?.filter(img => 
+        new Date(img.uploaded_at) > sevenDaysAgo
+      ).length || 0;
 
       setStats({
-        totalUsers: 1, // Just the current user for now
         totalImages: images?.length || 0,
-        totalApiKeys: settings?.length || 0,
-        recentActivity: images?.length || 0
+        hasApiKey: !!(settings?.openai_api_key),
+        recentUploads
       });
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
@@ -55,35 +65,42 @@ const AdminDashboard = () => {
 
   const statCards = [
     {
-      title: 'Total Users',
-      value: stats.totalUsers,
-      icon: Users,
-      color: 'bg-blue-500'
-    },
-    {
-      title: 'Total Images',
+      title: 'My Images',
       value: stats.totalImages,
       icon: Image,
-      color: 'bg-green-500'
+      color: 'bg-blue-500',
+      description: 'Total uploaded images'
     },
     {
-      title: 'API Keys Configured',
-      value: stats.totalApiKeys,
+      title: 'API Configuration',
+      value: stats.hasApiKey ? 'Ready' : 'Setup Needed',
       icon: Key,
-      color: 'bg-purple-500'
+      color: stats.hasApiKey ? 'bg-green-500' : 'bg-orange-500',
+      description: 'OpenAI API status'
     },
     {
       title: 'Recent Activity',
-      value: stats.recentActivity,
+      value: stats.recentUploads,
       icon: Activity,
-      color: 'bg-orange-500'
+      color: 'bg-purple-500',
+      description: 'Uploads this week'
+    },
+    {
+      title: 'Search Ready',
+      value: stats.hasApiKey && stats.totalImages > 0 ? 'Yes' : 'No',
+      icon: Upload,
+      color: stats.hasApiKey && stats.totalImages > 0 ? 'bg-emerald-500' : 'bg-gray-500',
+      description: 'Ready to search images'
     }
   ];
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">My Dashboard</h1>
+          <div className="text-sm text-gray-600">Welcome back, {user?.email}</div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} className="p-6 animate-pulse">
@@ -97,15 +114,19 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900">My Dashboard</h1>
+        <div className="text-sm text-gray-600">Welcome back, {user?.email}</div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat) => (
-          <Card key={stat.title} className="p-6">
+          <Card key={stat.title} className="p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-3xl font-bold">{stat.value}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
               </div>
               <div className={`${stat.color} p-3 rounded-lg text-white`}>
                 <stat.icon className="w-6 h-6" />
@@ -117,37 +138,43 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-sm">Images uploaded today</span>
-              <span className="font-medium">{stats.totalImages}</span>
+            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium">Upload new images</span>
+              <a href="/" className="text-green-600 hover:text-green-700 text-sm font-medium">
+                Go to Search →
+              </a>
             </div>
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-sm">API searches performed</span>
-              <span className="font-medium">-</span>
+            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium">Configure API key</span>
+              <a href="/admin/api-keys" className="text-green-600 hover:text-green-700 text-sm font-medium">
+                Setup →
+              </a>
             </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm">New user registrations</span>
-              <span className="font-medium">1</span>
+            <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium">Manage my images</span>
+              <a href="/admin/images" className="text-green-600 hover:text-green-700 text-sm font-medium">
+                View →
+              </a>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">System Status</h3>
+          <h3 className="text-lg font-semibold mb-4">Getting Started</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm">Database</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Online</span>
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${stats.hasApiKey ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <span className="text-sm">Set up OpenAI API key</span>
             </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm">Storage</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Online</span>
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${stats.totalImages > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <span className="text-sm">Upload your first image</span>
             </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm">AI Services</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Online</span>
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${stats.hasApiKey && stats.totalImages > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <span className="text-sm">Start searching images</span>
             </div>
           </div>
         </Card>

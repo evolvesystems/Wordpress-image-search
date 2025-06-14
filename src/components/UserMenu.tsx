@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
@@ -22,8 +22,8 @@ const UserMenu = () => {
           size="sm"
           className="text-white border-white hover:bg-white hover:text-green-600"
         >
-          <Settings className="w-4 h-4 mr-1" />
-          Admin
+          <BarChart3 className="w-4 h-4 mr-1" />
+          Dashboard
         </Button>
       </Link>
       <Button
