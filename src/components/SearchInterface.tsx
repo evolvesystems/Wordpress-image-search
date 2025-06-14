@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Camera, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,8 +40,9 @@ const SearchInterface = () => {
     if (!user) {
       toast({
         title: "Sign in to search images",
-        description: "You'll be redirected to your personal dashboard after signing in.",
+        description: "You'll be redirected to sign in.",
       });
+      navigate('/auth');
       return;
     }
     if (searchMode === 'wordpress' && settings?.wordpress_url && query) {
