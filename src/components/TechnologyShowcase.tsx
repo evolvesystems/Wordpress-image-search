@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Brain, Zap, Globe, Shield } from 'lucide-react';
@@ -48,30 +47,6 @@ const TechnologyShowcase = () => {
               <p className="text-gray-600">{feature.description}</p>
             </Card>
           ))}
-        </div>
-        
-        <div className="mt-12 p-8 bg-white rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold mb-4 text-center">Commercial Solutions Available</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-lg font-semibold mb-2">Cloud-Based Options:</h4>
-              <ul className="space-y-2 text-gray-700">
-                <li>• Google Vision AI - Excellent for general object detection</li>
-                <li>• Amazon Rekognition - Strong agricultural object recognition</li>
-                <li>• Clarifai - Customizable for specific agricultural needs</li>
-                <li>• Microsoft Azure Computer Vision</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-2">WordPress Plugins:</h4>
-              <ul className="space-y-2 text-gray-700">
-                <li>• WP Visual Search (can be customized)</li>
-                <li>• Smart Image Search plugins</li>
-                <li>• Custom integration with AI APIs</li>
-                <li>• Elasticsearch with image analysis</li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>
