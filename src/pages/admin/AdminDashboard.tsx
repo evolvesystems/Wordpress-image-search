@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Key, Search, Image, Check } from 'lucide-react';
+import { Key, Search, Image, Check, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUserSettings } from '@/hooks/useUserSettings';
 
@@ -90,6 +90,25 @@ const AdminDashboard = () => {
             <p className="text-sm text-gray-600 mb-3 text-center">Instantly find images in your site, see where they're used, or ask questions via AI chat.</p>
             <Button variant="default" asChild>
               <a href="/search">Start Searching</a>
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-8">
+        <div className="flex flex-col md:flex-row gap-6 items-center text-center md:text-left">
+          <div className="flex-shrink-0">
+            <div className="bg-indigo-100 w-12 h-12 flex items-center justify-center rounded-full">
+              <Code className="w-6 h-6 text-indigo-600" />
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg">Optional Step 4: Embed On Your Site</h3>
+            <p className="text-sm text-gray-600 mt-1">Add the AI chat widget to any website with a simple copy-paste script.</p>
+          </div>
+          <div className="flex-shrink-0 mt-4 md:mt-0">
+            <Button variant="outline" asChild>
+              <a href="/embed-demo">Get Embed Code</a>
             </Button>
           </div>
         </div>
