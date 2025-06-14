@@ -21,9 +21,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* AI Chat Assistant bubble should always be available */}
-      <ImageAIAssistant />
       <BrowserRouter>
+        {/* AI Chat Assistant bubble now inside BrowserRouter */}
+        <ImageAIAssistant />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
