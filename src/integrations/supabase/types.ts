@@ -11,9 +11,12 @@ export type Database = {
     Tables: {
       uploaded_images: {
         Row: {
+          alt_text: string | null
+          caption: string | null
           description: string | null
           file_size: number | null
           filename: string
+          height: number | null
           id: string
           mime_type: string | null
           storage_path: string
@@ -21,11 +24,15 @@ export type Database = {
           title: string | null
           uploaded_at: string
           user_id: string
+          width: number | null
         }
         Insert: {
+          alt_text?: string | null
+          caption?: string | null
           description?: string | null
           file_size?: number | null
           filename: string
+          height?: number | null
           id?: string
           mime_type?: string | null
           storage_path: string
@@ -33,11 +40,15 @@ export type Database = {
           title?: string | null
           uploaded_at?: string
           user_id: string
+          width?: number | null
         }
         Update: {
+          alt_text?: string | null
+          caption?: string | null
           description?: string | null
           file_size?: number | null
           filename?: string
+          height?: number | null
           id?: string
           mime_type?: string | null
           storage_path?: string
@@ -45,6 +56,7 @@ export type Database = {
           title?: string | null
           uploaded_at?: string
           user_id?: string
+          width?: number | null
         }
         Relationships: []
       }
@@ -101,6 +113,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      validate_user_storage_path: {
+        Args: { user_id: string; storage_path: string }
+        Returns: boolean
+      }
       validate_wordpress_url: {
         Args: { url: string }
         Returns: boolean

@@ -52,9 +52,10 @@ export const useImageUpload = () => {
         const fileMetadata = metadata[file.name];
         const extractedMetadata = await extractImageMetadata(file);
         
-        // Create user-specific storage path for security
+        // Always use user-specific folder (user.id/...), enforced by storage policy.
         const timestamp = Date.now();
         const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        // Storage path MUST start with user id, required by storage RLS!
         const fileName = `${user.id}/${timestamp}-${sanitizedFileName}`;
         
         // Upload to storage with user-specific path
@@ -64,7 +65,7 @@ export const useImageUpload = () => {
 
         if (uploadError) throw uploadError;
 
-        // Save metadata to database with proper user_id
+        // Save metadata to database with proper user_id and storage path
         const { error: dbError } = await supabase
           .from('uploaded_images')
           .insert({
@@ -79,7 +80,7 @@ export const useImageUpload = () => {
             file_size: file.size,
             width: extractedMetadata.width,
             height: extractedMetadata.height,
-            user_id: user.id // Explicitly set user_id for security
+            user_id: user.id // Explicitly set user_id for RLS and security
           });
 
         if (dbError) throw dbError;
