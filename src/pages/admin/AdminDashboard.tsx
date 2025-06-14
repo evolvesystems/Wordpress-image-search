@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Image, Key, Activity, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -155,11 +154,7 @@ const AdminDashboard = () => {
       {/* Search Section */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Search Your Images</h2>
-        <SearchInterface 
-          onSearch={searchImages}
-          isLoading={isLoading}
-          results={results}
-        />
+        <SearchInterface />
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

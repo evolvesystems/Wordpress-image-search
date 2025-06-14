@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import AuthPage from '@/components/AuthPage';
@@ -29,11 +28,7 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <ImageSearchHeader />
       
-      <SearchInterface 
-        onSearch={() => {}} // Not used anymore, handled in component
-        isLoading={false}
-        results={[]}
-      />
+      <SearchInterface />
       
       <TechnologyShowcase />
       
