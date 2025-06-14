@@ -7,6 +7,7 @@ import { Search, Image, Download, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/ImageUpload';
 
 interface ImageData {
   id: string;
@@ -127,6 +128,8 @@ const AdminImages = () => {
           </div>
         </div>
       </div>
+
+      <ImageUpload onUploadComplete={loadImages} />
 
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
