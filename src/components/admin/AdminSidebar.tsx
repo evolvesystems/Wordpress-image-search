@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -24,6 +25,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 
+// Removed "Settings" and "My Images"
 const adminMenuItems = [
   {
     title: "Dashboard",
@@ -31,19 +33,9 @@ const adminMenuItems = [
     icon: BarChart3,
   },
   {
-    title: "My Images",
-    url: "/admin/images",
-    icon: Image,
-  },
-  {
     title: "API Keys",
     url: "/admin/api-keys",
     icon: Key,
-  },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
   },
   {
     title: "WordPress Search",
@@ -124,3 +116,4 @@ export function AdminSidebar() {
     </Sidebar>
   );
 }
+
