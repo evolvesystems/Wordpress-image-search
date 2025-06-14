@@ -48,7 +48,10 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
       // Simulate API call - replace with actual endpoint
       const response = await fetch(apiEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
         body: JSON.stringify({ message: value, siteName }),
       });
 

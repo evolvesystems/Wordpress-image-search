@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   
@@ -14,7 +13,8 @@
         apiEndpoint: '/api/chat',
         primaryColor: '#16a34a',
         position: 'bottom-right',
-        siteName: 'Website'
+        siteName: 'Website',
+        apiKey: '',
       };
       
       // Merge configurations
@@ -120,7 +120,10 @@
         try {
           const response = await fetch(finalConfig.apiEndpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'apikey': finalConfig.apiKey,
+            },
             body: JSON.stringify({ message, siteName: finalConfig.siteName })
           });
           

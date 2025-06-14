@@ -17,6 +17,7 @@ const EmbedDemo = () => {
       script.onload = function() {
         window.AIChat.init({
           apiEndpoint: '${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-embed',
+          apiKey: '${import.meta.env.VITE_SUPABASE_ANON_KEY}',
           primaryColor: '#16a34a',
           position: 'bottom-right',
           siteName: 'Your Website Name'
