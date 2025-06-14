@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   
@@ -108,6 +107,7 @@
           border-radius: 8px;
           font-size: 14px;
           max-width: 85%;
+          white-space: pre-line;
           ${isUser 
             ? `background-color: ${finalConfig.primaryColor}; color: white;` 
             : 'background: white; border: 1px solid #e5e7eb; color: #374151;'
@@ -119,6 +119,64 @@
         messages.scrollTop = messages.scrollHeight;
       }
       
+      function addImages(images) {
+        const container = document.createElement('div');
+        container.style.cssText = `
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          margin-top: 4px;
+          margin-bottom: 12px;
+        `;
+
+        images.forEach(img => {
+          const card = document.createElement('a');
+          card.href = img.link || '#';
+          card.target = '_blank';
+          card.rel = 'noopener noreferrer';
+          card.style.cssText = `
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 11px;
+            text-decoration: none;
+            color: inherit;
+            background: white;
+          `;
+
+          const imageEl = document.createElement('img');
+          imageEl.src = img.source_url;
+          imageEl.alt = img.alt_text || (img.title ? img.title.rendered : '');
+          imageEl.style.cssText = `
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            background-color: #f3f4f6;
+          `;
+
+          const content = document.createElement('div');
+          content.style.padding = '8px';
+
+          const title = document.createElement('div');
+          title.textContent = img.title ? img.title.rendered : '';
+          title.style.cssText = `
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #1f2937;
+          `;
+          
+          content.appendChild(title);
+          card.appendChild(imageEl);
+          card.appendChild(content);
+          container.appendChild(card);
+        });
+
+        messages.appendChild(container);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
       async function sendMessage() {
         const message = input.value.trim();
         if (!message) return;
@@ -141,7 +199,16 @@
           
           if (response.ok) {
             const data = await response.json();
-            addMessage(data.response || "I'm here to help! What would you like to know?");
+            const botResponse = data.response;
+
+            if (botResponse) {
+              addMessage(botResponse.content);
+              if (botResponse.type === 'image_results' && botResponse.results && botResponse.results.length > 0) {
+                addImages(botResponse.results);
+              }
+            } else {
+               addMessage("I'm here to help! What would you like to know?");
+            }
           } else {
             addMessage("I'm having trouble connecting right now. Please try again later.");
           }
