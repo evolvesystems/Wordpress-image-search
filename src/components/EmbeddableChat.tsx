@@ -20,49 +20,6 @@ interface EmbeddableChatProps {
   wordpressUrl?: string;
 }
 
-const sampleImages: WPImageResult[] = [
-  {
-    id: 101,
-    source_url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=80',
-    title: { rendered: 'Misty Mountains' },
-    alt_text: 'A landscape photo of mountains covered in mist.',
-    caption: { rendered: 'Sample image for demonstration.' },
-    media_details: { width: 400, height: 267 },
-    mime_type: 'image/jpeg',
-    link: '#',
-  },
-  {
-    id: 102,
-    source_url: 'https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=400&q=80',
-    title: { rendered: 'Cozy Living Room' },
-    alt_text: 'A cozy living room with a couch and a cat.',
-    caption: { rendered: 'Sample image for demonstration.' },
-    media_details: { width: 400, height: 267 },
-    mime_type: 'image/jpeg',
-    link: '#',
-  },
-  {
-    id: 103,
-    source_url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400&q=80',
-    title: { rendered: 'Yellow Flowers' },
-    alt_text: 'A field of bright yellow flowers.',
-    caption: { rendered: 'Sample image for demonstration.' },
-    media_details: { width: 400, height: 600 },
-    mime_type: 'image/jpeg',
-    link: '#',
-  },
-  {
-    id: 104,
-    source_url: 'https://images.unsplash.com/photo-1507525428034-b723a9ce6890?w=400&q=80',
-    title: { rendered: 'Beach Waves' },
-    alt_text: 'Ocean waves crashing on a sandy beach.',
-    caption: { rendered: 'Sample image for demonstration.' },
-    media_details: { width: 400, height: 267 },
-    mime_type: 'image/jpeg',
-    link: '#',
-  }
-];
-
 const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
   apiEndpoint = `${SUPABASE_URL}/functions/v1/chat-embed`,
   position = "bottom-right",
@@ -99,17 +56,6 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
     setInput("");
     setIsLoading(true);
 
-    // DEMO MODE (client-side)
-    if (!wordpressUrl) {
-      setTimeout(() => { // simulate network delay
-        setMessages((prev) => [...prev, { role: "bot", content: `This is a demo. In a live environment, I would search your media library. Here are some sample images for "${value}":` }]);
-        setResults(sampleImages);
-        setIsLoading(false);
-      }, 500);
-      return;
-    }
-    
-    // LIVE MODE (backend)
     try {
       const response = await fetch(apiEndpoint, {
         method: "POST",
