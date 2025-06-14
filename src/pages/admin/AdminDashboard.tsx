@@ -37,7 +37,7 @@ const AdminDashboard = () => {
         typeof data === 'object' &&
         'openai_api_key' in data
       ) {
-        const safeData = data as { openai_api_key?: string | null };
+        const safeData = data as { openai_api_key?: string | null }; // guaranteed non-null here
         const apiKey = safeData.openai_api_key;
         setHasAPIKey(Boolean(apiKey));
       } else {
@@ -128,3 +128,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
