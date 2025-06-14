@@ -7,24 +7,27 @@ import { Settings } from "lucide-react";
 type Props = {
   onClose: () => void;
   onSettings: () => void;
+  showSettings?: boolean;
 };
 
-const ImageAssistantHeader: React.FC<Props> = ({ onClose, onSettings }) => {
+const ImageAssistantHeader: React.FC<Props> = ({ onClose, onSettings, showSettings = true }) => {
   return (
     <Card className="w-full rounded-t-xl px-2 py-3 shadow-none flex items-center justify-between border-b bg-white rounded-b-none">
       <div className="flex items-center gap-2">
         <span className="font-bold text-lg text-green-700">AI Image Assistant</span>
       </div>
       <div className="flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Settings"
-          className="rounded-full border-gray-300 bg-white text-green-700 hover:bg-green-50"
-          onClick={onSettings}
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
+        {showSettings && (
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Settings"
+            className="rounded-full border-gray-300 bg-white text-green-700 hover:bg-green-50"
+            onClick={onSettings}
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+        )}
         <Button
           variant="outline"
           size="icon"

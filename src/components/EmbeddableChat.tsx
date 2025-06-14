@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { MessageCircle, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
+import React, { useState, useEffect, useRef } from "react";
+import { MessageCircle } from "lucide-react";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
+import { WPImageResult } from "@/hooks/useWordPressImageSearch";
+import ImageAssistantHeader from "./image-assistant/ImageAssistantHeader";
+import ImageAssistantMessageArea from "./image-assistant/ImageAssistantMessageArea";
+import ImageAssistantInput from "./image-assistant/ImageAssistantInput";
 
 interface Message {
   role: "user" | "bot";
@@ -20,7 +22,6 @@ interface EmbeddableChatProps {
 
 const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
   apiEndpoint = `${SUPABASE_URL}/functions/v1/chat-embed`,
-  primaryColor = "#16a34a",
   position = "bottom-right",
   siteName = "Website",
   wordpressUrl
@@ -30,24 +31,32 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
-      content: `👋 Hello! I'm your AI assistant for ${siteName}. How can I help you today?`,
+      content: "Hi! I'm your AI Image Assistant. Ask me for an image (e.g., 'Show me a wheat field', 'Find drone photos'), and I'll help you search your WordPress library.",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState<WPImageResult[]>([]);
+  const [lastUserQuery, setLastUserQuery] = useState<string | null>(null);
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const positionClass = position === "bottom-left" ? "bottom-6 left-6" : "bottom-6 right-6";
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, results]);
 
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const value = input.trim();
     if (!value) return;
 
+    setResults([]);
+    setLastUserQuery(value);
     setMessages((prev) => [...prev, { role: "user", content: value }]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with actual endpoint
       const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { 
@@ -60,10 +69,19 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        setMessages((prev) => [
-          ...prev,
-          { role: "bot", content: data.response || "I'm here to help! What would you like to know?" },
-        ]);
+        const botResponse = data.response;
+
+        if (botResponse) {
+          setMessages((prev) => [...prev, { role: "bot", content: botResponse.content }]);
+          if (botResponse.type === 'image_results' && botResponse.results) {
+            setResults(botResponse.results);
+          }
+        } else {
+           setMessages((prev) => [
+            ...prev,
+            { role: "bot", content: "I'm here to help! What would you like to know?" },
+          ]);
+        }
       } else {
         setMessages((prev) => [
           ...prev,
@@ -83,78 +101,35 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
   if (!isOpen) {
     return (
       <button
-        className={`fixed ${positionClass} z-50 text-white rounded-full shadow-lg p-4 flex items-center justify-center hover:scale-105 transition-transform`}
+        className={`fixed ${positionClass} z-50 bg-green-600 text-white rounded-full shadow-lg p-4 flex items-center justify-center hover:bg-green-700 transition-colors`}
         onClick={() => setIsOpen(true)}
-        style={{ backgroundColor: primaryColor }}
-        aria-label="Open chat assistant"
+        aria-label="Open AI Image Assistant"
+        style={{ boxShadow: "0px 4px 24px rgba(0,0,0,0.11)" }}
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="w-7 h-7" />
       </button>
     );
   }
 
   return (
-    <div className={`fixed ${positionClass} z-50 w-80 h-96 rounded-xl shadow-2xl bg-white border flex flex-col animate-scale-in`}>
-      {/* Header */}
-      <div 
-        className="px-4 py-3 rounded-t-xl text-white flex items-center justify-between"
-        style={{ backgroundColor: primaryColor }}
-      >
-        <div className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          <span className="font-semibold">AI Assistant</span>
-        </div>
-        <button
-          onClick={() => setIsOpen(false)}
-          className="text-white hover:bg-black/10 rounded p-1"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`px-3 py-2 rounded-lg text-sm max-w-[85%] whitespace-pre-wrap ${
-                msg.role === "user" 
-                  ? "text-white" 
-                  : "bg-white text-gray-800 border"
-              }`}
-              style={msg.role === "user" ? { backgroundColor: primaryColor } : {}}
-            >
-              {msg.content}
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white border px-3 py-2 rounded-lg text-sm text-gray-600">
-              Typing...
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Input */}
-      <form onSubmit={handleSend} className="flex p-3 border-t bg-white rounded-b-xl">
-        <Input
-          className="flex-1 rounded-l-md border-gray-300 text-sm"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          disabled={isLoading}
-        />
-        <Button
-          type="submit"
-          className="rounded-l-none border-l-0 text-white font-medium px-4"
-          disabled={!input.trim() || isLoading}
-          style={{ backgroundColor: primaryColor }}
-        >
-          Send
-        </Button>
-      </form>
+    <div className={`fixed ${positionClass} z-50 w-[96vw] max-w-md rounded-xl shadow-2xl bg-white border border-gray-200 flex flex-col max-h-[90vh] animate-fade-in`}>
+      <ImageAssistantHeader
+        onClose={() => setIsOpen(false)}
+        onSettings={() => {}}
+        showSettings={false}
+      />
+      <ImageAssistantMessageArea
+        messages={messages}
+        results={results}
+        chatEndRef={chatEndRef}
+        lastUserQuery={lastUserQuery}
+      />
+      <ImageAssistantInput
+        input={input}
+        setInput={setInput}
+        handleSend={handleSend}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
