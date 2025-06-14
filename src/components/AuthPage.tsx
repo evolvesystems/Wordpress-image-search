@@ -62,21 +62,21 @@ const AuthPage = () => {
         // Redirect to admin dashboard after login
         setTimeout(() => navigate('/admin'), 200);
       } else {
-        // Must set redirect URL for email confirmation
-        const redirectUrl = `${window.location.origin}/`;
+        // Sign up without forcing email confirmation
         const { error } = await supabase.auth.signUp({
           email,
-          password,
-          options: { emailRedirectTo: redirectUrl }
+          password
         });
 
         if (error) throw error;
 
-        setSignUpComplete(true);
         toast({
           title: "Account created!",
-          description: "Check your email to confirm your account, then return here to sign in.",
+          description: "You can now sign in with your credentials.",
         });
+        
+        // Switch to login mode after successful signup
+        updateMode("login");
       }
     } catch (error: any) {
       toast({
