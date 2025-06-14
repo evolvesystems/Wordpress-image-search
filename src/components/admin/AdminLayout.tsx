@@ -26,7 +26,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
             >
-              Built by Lovable
+              Built by Lovable - Try for free!
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
