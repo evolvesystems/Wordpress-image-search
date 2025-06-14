@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import EmbeddableChat from '@/components/EmbeddableChat';
 
 const EmbedDemo = () => {
   const [config, setConfig] = useState({
@@ -13,6 +14,7 @@ const EmbedDemo = () => {
     siteName: 'Your Website Name'
   });
   const [formState, setFormState] = useState(config);
+  const [showTestChat, setShowTestChat] = useState(false);
 
   const handleRefresh = () => {
     setConfig(formState);
@@ -131,6 +133,24 @@ const EmbedDemo = () => {
           </button>
         </div>
       </div>
+
+      {/* Test Chat section */}
+      <div className="mt-8 bg-white rounded-lg p-6 shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4">Test it on this page</h2>
+        <p className="text-gray-600 mb-4">
+          You can also launch the chat widget directly on this page to test the React component version. The settings from the configuration options below will be applied after you click refresh.
+        </p>
+        <Button onClick={() => setShowTestChat(prev => !prev)}>
+          {showTestChat ? 'Hide Test Chat' : 'Launch Test Chat'}
+        </Button>
+      </div>
+      {showTestChat && (
+        <EmbeddableChat
+          primaryColor={config.primaryColor}
+          position={config.position}
+          siteName={config.siteName}
+        />
+      )}
 
       {/* Configuration Options */}
       <div className="mt-8 bg-white rounded-lg p-6 shadow-lg">
