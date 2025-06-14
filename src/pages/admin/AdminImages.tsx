@@ -12,10 +12,15 @@ interface ImageData {
   filename: string;
   title: string;
   description: string;
+  alt_text?: string;
+  caption?: string;
   tags: string[];
   storage_path: string;
   uploaded_at: string;
   file_size: number;
+  width?: number;
+  height?: number;
+  mime_type?: string;
 }
 
 const AdminImages = () => {
