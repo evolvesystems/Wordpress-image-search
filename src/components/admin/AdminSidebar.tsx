@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -45,6 +44,11 @@ const adminMenuItems = [
     title: "Settings",
     url: "/admin/settings",
     icon: Settings,
+  },
+  {
+    title: "WordPress Search",
+    url: "/admin/wordpress-search-setup",
+    icon: Image,
   },
 ];
 
