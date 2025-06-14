@@ -1,6 +1,5 @@
 
-import React from 'react';
-import EmbeddableChat from '@/components/EmbeddableChat';
+import React, { useRef, useEffect } from 'react';
 
 const EmbedDemo = () => {
   const embedCode = `<!-- AI Chat Widget -->
@@ -26,6 +25,46 @@ const EmbedDemo = () => {
   })();
 </script>`;
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const doc = iframe.contentDocument;
+    if (!doc) return;
+
+    const iframeContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { 
+              margin: 0; 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 100%;
+              text-align: center;
+              color: #2563eb; /* text-blue-600 */
+              font-weight: 500; /* font-medium */
+              background-color: #eff6ff; /* bg-blue-50 */
+            }
+          </style>
+        </head>
+        <body>
+          <div>Your Website Content Here</div>
+          ${embedCode}
+        </body>
+      </html>
+    `;
+
+    doc.open();
+    doc.write(iframeContent);
+    doc.close();
+  }, [embedCode]);
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-8">
@@ -40,18 +79,15 @@ const EmbedDemo = () => {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Demo */}
         <div className="bg-white rounded-lg p-6 shadow-lg">
-          <h2 className="text-2xl font-semibold mb-4">Live Demo</h2>
+          <h2 className="text-2xl font-semibold mb-4">Live Preview</h2>
           <p className="text-gray-600 mb-4">
-            This is how the chat widget will appear on your website. Try clicking the chat button!
+            This is a true preview of how the chat widget will appear on your website. The script below is running in this sandboxed frame. Try clicking the chat button!
           </p>
-          <div className="bg-blue-50 rounded-lg p-8 min-h-[300px] relative border-2 border-dashed border-blue-200">
-            <div className="text-center text-blue-600 font-medium">
-              Your Website Content Here
-            </div>
-            <EmbeddableChat 
-              siteName="Demo Website"
-              primaryColor="#16a34a"
-              position="bottom-right"
+          <div className="bg-blue-100 rounded-lg h-[300px] relative border-2 border-dashed border-blue-200 overflow-hidden">
+            <iframe
+              ref={iframeRef}
+              title="Embed Preview"
+              className="w-full h-full absolute top-0 left-0 border-0"
             />
           </div>
         </div>
