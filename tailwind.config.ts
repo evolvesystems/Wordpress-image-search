@@ -61,6 +61,30 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				green: {
+					50: '#f6fcf7',
+					100: '#e6f5ea',
+					200: '#c7e7ce',
+					300: '#96d5a8',
+					400: '#69a86b',
+					500: '#417a41',
+					600: '#225922',
+					700: '#19411b',
+					800: '#133016',
+					900: '#102813'
+				},
+				earth: {
+					50: '#f8f7f4',
+					100: '#eae6da',
+					200: '#daccbb',
+					300: '#c9b497',
+					400: '#b19673',
+					500: '#93754d',
+					600: '#705736',
+					700: '#574124',
+					800: '#3a2a18',
+					900: '#24190a'
 				}
 			},
 			borderRadius: {

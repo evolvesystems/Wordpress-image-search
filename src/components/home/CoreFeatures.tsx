@@ -1,4 +1,3 @@
-
 import React from "react";
 
 const features = [
@@ -30,19 +29,19 @@ const features = [
 ];
 
 const CoreFeatures = () => (
-  <section className="w-full bg-gradient-to-r from-blue-200 via-white to-blue-50 py-20 border-y border-blue-200" id="features">
+  <section className="w-full bg-gradient-to-r from-green-100 via-amber-50 to-emerald-50 py-20 border-y border-green-200" id="features">
     <div className="container mx-auto px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-11 tracking-tight">🔍 Core Features</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-11 tracking-tight">🔍 Core Features</h2>
       <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {features.map(({emoji, title, text}) => (
           <div
             key={title}
-            className="bg-white border border-blue-100 rounded-xl shadow-md p-6 flex flex-col items-start hover:scale-105 transition-transform duration-150 hover:shadow-xl"
+            className="bg-white border border-green-100 rounded-xl shadow-md p-6 flex flex-col items-start hover:scale-105 transition-transform duration-150 hover:shadow-xl"
             style={{ minHeight: 210 }}
           >
             <span className="text-4xl mb-2">{emoji}</span>
-            <h3 className="font-semibold text-xl text-blue-800 mb-2">{title}</h3>
-            <p className="text-blue-700 text-base">{text}</p>
+            <h3 className="font-semibold text-xl text-green-700 mb-2">{title}</h3>
+            <p className="text-green-800 text-base">{text}</p>
           </div>
         ))}
       </div>

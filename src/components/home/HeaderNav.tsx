@@ -1,25 +1,25 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Image } from "lucide-react";
+import { Leaf } from "lucide-react";
 
 const HeaderNav = () => (
-  <header className="w-full bg-gradient-to-b from-blue-900 to-blue-700/80 text-white shadow-sm z-30 relative">
+  <header className="w-full bg-green-700/95 text-white shadow-md z-30 relative">
     <div className="container mx-auto px-4 flex items-center justify-between h-16">
-      <Link to="/" className="flex items-center gap-2 font-bold text-xl hover:opacity-80">
-        <Image className="w-7 h-7 text-blue-200" />
-        AgriVision
+      <Link to="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-80">
+        <Leaf className="w-7 h-7 text-green-200" />
+        Wordpress + <span className="ml-1 text-green-100">AI</span>
       </Link>
       <nav className="flex items-center gap-4">
         <Link
           to="/auth"
-          className="px-4 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
+          className="px-4 py-2 rounded-lg text-green-900 bg-green-100 font-semibold hover:bg-green-200 hover:text-green-800 transition shadow-sm"
         >
           Login
         </Link>
         <Link
           to="/auth"
-          className="px-4 py-2 rounded-lg font-semibold border border-white/60 hover:bg-white hover:text-blue-700 transition"
+          className="px-4 py-2 rounded-lg font-semibold border border-green-200 text-green-100 hover:bg-white hover:text-green-700 transition shadow-sm"
         >
           Sign Up
         </Link>
