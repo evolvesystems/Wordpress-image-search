@@ -1,5 +1,6 @@
 
 import React from 'react';
+import HeaderNav from '@/components/home/HeaderNav';
 import HeroSection from '@/components/home/HeroSection';
 import WhyItMatters from '@/components/home/WhyItMatters';
 import CoreFeatures from '@/components/home/CoreFeatures';
@@ -11,6 +12,7 @@ import ImageAIAssistant from '@/components/ImageAIAssistant';
 
 const Index = () => (
   <div className="min-h-screen w-full bg-gradient-to-b from-blue-100 via-blue-50 to-white relative font-sans">
+    <HeaderNav />
     <HeroSection />
     <WhyItMatters />
     <CoreFeatures />

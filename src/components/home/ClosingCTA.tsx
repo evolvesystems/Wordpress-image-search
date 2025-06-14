@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 
@@ -12,14 +11,14 @@ const ClosingCTA = () => (
         Cut through the chaos. Get clarity and instant answers about all your images—with zero setup headaches.
       </p>
       <div className="flex flex-wrap gap-4 justify-center">
-        <Button className="px-8 py-3 text-lg bg-blue-500 text-white font-bold hover:bg-blue-700 rounded-xl shadow-lg animate-[pulse_1.7s_ease-in-out_infinite]">
+        <button className="px-8 py-3 text-lg bg-white text-blue-800 font-bold hover:bg-blue-100 rounded-xl shadow-lg transition">
           🔎 Try Instantly Free
-        </Button>
-        <Button asChild variant="outline" className="px-8 py-3 text-lg border-blue-300 text-blue-200 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 rounded-xl">
-          <a href="javascript:void(0)">
+        </button>
+        <a href="#ai-chat">
+          <button className="px-8 py-3 text-lg border border-blue-200 text-blue-200 hover:bg-blue-100 hover:text-blue-700 flex items-center gap-2 rounded-xl transition">
             💬 Experience AI Chat
-          </a>
-        </Button>
+          </button>
+        </a>
       </div>
     </div>
   </section>
