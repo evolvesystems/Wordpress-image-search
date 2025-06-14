@@ -1,20 +1,21 @@
+
 import React from "react";
 
 const steps = [
   {
     num: 1,
-    title: "Sign Up Fast",
-    desc: "Create your free account with just an email. No billing. No long forms."
+    title: "Sign Up",
+    desc: "Create your account in seconds – no credit card, no hassle."
   },
   {
     num: 2,
     title: "Connect WordPress",
-    desc: "Securely link your WordPress site and instantly scan your media library. No uploads or syncing required."
+    desc: "Securely link your site and instantly scan your media library. No plugin installs."
   },
   {
     num: 3,
-    title: "Start Searching (or Chatting)",
-    desc: "Type what you need—or just ask. Search by concept, color, or see where images appear, lightning fast."
+    title: "Supercharge Search",
+    desc: "Type, describe, or ask your way to the images you need — all powered by modern AI."
   }
 ];
 

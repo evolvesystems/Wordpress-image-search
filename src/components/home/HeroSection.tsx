@@ -1,3 +1,4 @@
+
 import React from "react";
 
 const stats = [
@@ -12,20 +13,20 @@ const HeroSection = () => (
       <div className="flex-1 flex flex-col items-center md:items-start">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight leading-tight font-serif text-green-800 drop-shadow">
           Modern WordPress Image Search
-          <br /> <span className="text-green-400">+ AI Simplicity</span>
+          <br /> <span className="text-green-400">+ AI Productivity</span>
         </h1>
         <p className="text-lg md:text-xl text-green-700 mb-8 max-w-xl font-medium">
-          Effortlessly find every image on your site. <span className="font-semibold text-green-900">Powered by earth-friendly, instant AI search.</span>
+          Instantly find and organize every image on your WordPress site.<span className="font-semibold text-green-900"> Power up your workflow with fast, intelligent AI search.</span>
         </p>
         <div className="flex flex-wrap gap-4">
-          <a href="/auth">
+          <a href="/auth?signup=1">
             <button className="px-8 py-3 text-lg bg-green-600 text-white font-bold hover:bg-green-700 rounded-xl shadow-lg transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-green-800">
-              🔎 Try Instantly Free
+              🚀 Sign Up Free
             </button>
           </a>
-          <a href="/auth">
+          <a href="/auth?signup=1">
             <button className="px-8 py-3 text-lg border border-green-300 text-green-700 hover:bg-green-100 hover:text-green-900 rounded-xl flex items-center gap-2 transition hover:scale-105">
-              💬 Experience AI Chat
+              💬 Try AI Search
             </button>
           </a>
         </div>
@@ -34,8 +35,8 @@ const HeroSection = () => (
         <div className="relative z-10 animate-fade-in">
           <div className="bg-white/30 backdrop-blur-sm border border-green-200/50 rounded-2xl p-6 shadow-xl">
             <img
-              src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=520&q=80"
-              alt="Agriculture illustration"
+              src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=520&q=80"
+              alt="Modern WordPress search illustration"
               className="rounded-2xl w-full max-w-xs aspect-square object-cover border border-emerald-200 shadow-md"
               draggable="false"
             />

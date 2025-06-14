@@ -1,27 +1,28 @@
+
 import React from "react";
 
 const plans = [
   {
     name: "Free Account",
     features: [
-      "Full visual and keyword search",
-      "Usage mapping included"
+      "Full visual and AI-powered search",
+      "Image usage analysis included"
     ],
     price: "Free Forever"
   },
   {
-    name: "AI Chat (With Your Key)",
+    name: "AI Chat (Bring Your Own Key)",
     features: [
-      "AI Chat Assistant unlocked",
+      "AI Chat Assistant for your media",
       "Use your own OpenAI API key"
     ],
     price: "No Extra Cost"
   }
 ];
 const highlights = [
-  "No license fees or surprises",
+  "No license fees – ever",
   "You control all AI features",
-  "Instant setup—no plugins needed"
+  "Instant setup – no plugins needed"
 ];
 
 const PricingOverview = () => (

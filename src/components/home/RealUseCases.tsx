@@ -1,11 +1,13 @@
+
 import React from "react";
 
 const useCases = [
-  "“Show me every image not being used anywhere.”",
-  "“Where are all the images with our old logo?”",
-  "“Find all the hero banners used in my blog posts.”",
-  "“What images are on product and sales pages?”",
-  "“Find all images with a blue background uploaded last year.”"
+  "“Show me all header images used this month.”",
+  "“Find all media files over 2MB in size.”",
+  "“Where are our old brand logos used?”",
+  "“List images not used in any blog posts.”",
+  "“Find images uploaded by content editors in 2024.”",
+  "“Show featured images from recent tech posts.”"
 ];
 
 const RealUseCases = () => (
