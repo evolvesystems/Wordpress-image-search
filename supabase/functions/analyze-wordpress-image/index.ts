@@ -2,7 +2,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+// Edge functions automatically have access to the service role key
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -14,8 +17,24 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl } = await req.json();
-    if (!imageUrl) throw new Error("Missing imageUrl");
+    const { imageUrl, user_id } = await req.json();
+    if (!imageUrl || !user_id) throw new Error("Missing imageUrl or user_id");
+
+    // Fetch user's OpenAI API key from user_settings
+    const settingsResp = await fetch(
+      `${supabaseUrl}/rest/v1/user_settings?select=openai_api_key&user_id=eq.${user_id}&limit=1`,
+      {
+        headers: {
+          "apikey": serviceKey,
+          "Authorization": `Bearer ${serviceKey}`,
+        }
+      }
+    );
+    if (!settingsResp.ok) throw new Error("Failed to load user settings");
+    const [settings] = await settingsResp.json();
+    if (!settings?.openai_api_key) throw new Error("OpenAI API key not found for user");
+
+    const openAIApiKey = settings.openai_api_key;
 
     // Download the image as blob
     const imgResp = await fetch(imageUrl);
