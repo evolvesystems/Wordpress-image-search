@@ -72,7 +72,7 @@ export const useAuth = () => {
       toast({
         title: "You have been signed out.",
         description: (
-          <p>
+          <div>
             Want an App Like this?{' '}
             <a 
               href="https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a" 
@@ -82,15 +82,26 @@ export const useAuth = () => {
             >
               Get a free trial here
             </a>.
-          </p>
+          </div>
         ),
-        duration: 10000,
+        duration: 100000, // basically persistent for a long time
+        action: (
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-4 py-2 ml-4"
+            onClick={() => {
+              window.open("https://lovable.dev/invite/de9ea0bd-3b51-4f3f-b027-cff747c4792a", "_blank", "noopener,noreferrer");
+              window.location.href = '/';
+            }}
+          >
+            Start your free trial
+          </button>
+        ),
+        onOpenChange: (open: boolean) => {
+          // If the user closes the toast, redirect
+          if (!open) window.location.href = '/';
+        },
       });
-      
-      // Delay redirect to allow user to see toast
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 5000);
+      // No auto-redirect; toast must be interacted with
     } catch (error: any) {
       console.error('Unexpected error during signout:', error);
       toast({
@@ -108,3 +119,4 @@ export const useAuth = () => {
     signOut,
   };
 };
+
