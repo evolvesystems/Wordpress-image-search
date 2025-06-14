@@ -15,13 +15,15 @@ interface EmbeddableChatProps {
   primaryColor?: string;
   position?: "bottom-right" | "bottom-left";
   siteName?: string;
+  wordpressUrl?: string;
 }
 
 const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
   apiEndpoint = `${SUPABASE_URL}/functions/v1/chat-embed`,
   primaryColor = "#16a34a",
   position = "bottom-right",
-  siteName = "Website"
+  siteName = "Website",
+  wordpressUrl
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -53,7 +55,7 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
           "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           "apikey": SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ message: value, siteName }),
+        body: JSON.stringify({ message: value, siteName, wordpressUrl }),
       });
 
       if (response.ok) {
@@ -115,7 +117,7 @@ const EmbeddableChat: React.FC<EmbeddableChatProps> = ({
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`px-3 py-2 rounded-lg text-sm max-w-[85%] ${
+              className={`px-3 py-2 rounded-lg text-sm max-w-[85%] whitespace-pre-wrap ${
                 msg.role === "user" 
                   ? "text-white" 
                   : "bg-white text-gray-800 border"

@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   
@@ -25,6 +26,7 @@
         position: 'bottom-right',
         siteName: 'Website',
         apiKey: '',
+        wordpressUrl: null,
       };
       
       // Merge configurations
@@ -134,7 +136,7 @@
               'Authorization': `Bearer ${finalConfig.apiKey}`,
               'apikey': finalConfig.apiKey,
             },
-            body: JSON.stringify({ message, siteName: finalConfig.siteName })
+            body: JSON.stringify({ message, siteName: finalConfig.siteName, wordpressUrl: finalConfig.wordpressUrl })
           });
           
           if (response.ok) {

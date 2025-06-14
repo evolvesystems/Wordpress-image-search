@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
+import { useWordPressUserSettings } from "@/hooks/useWordPressUserSettings";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,6 +17,9 @@ const EmbedDemo = () => {
   });
   const [formState, setFormState] = useState(config);
   const [showTestChat, setShowTestChat] = useState(false);
+  const { settings: wpSettings } = useWordPressUserSettings();
+  const wordpressUrl = wpSettings?.wordpress_url;
+
 
   const handleRefresh = () => {
     setConfig(formState);
@@ -35,7 +39,8 @@ const EmbedDemo = () => {
             apiKey: '${SUPABASE_PUBLISHABLE_KEY}',
             primaryColor: '${config.primaryColor}',
             position: '${config.position}',
-            siteName: '${config.siteName}'
+            siteName: '${config.siteName}'${wordpressUrl ? `,
+            wordpressUrl: '${wordpressUrl}'` : ''}
           });
         }
       };
@@ -150,6 +155,7 @@ const EmbedDemo = () => {
           primaryColor={config.primaryColor}
           position="bottom-left"
           siteName={config.siteName}
+          wordpressUrl={wordpressUrl}
         />
       )}
 
