@@ -18,6 +18,7 @@ interface WordPressAnalyzeCardProps {
     };
     mime_type?: string;
     date?: string;
+    tags?: string[]; // now optionally present
     [key: string]: any; // allow flexible extra meta
   };
 }
@@ -79,6 +80,20 @@ const WordPressImageAnalyzeCard: React.FC<WordPressAnalyzeCardProps> = ({ img })
             </span>
           )}
         </div>
+
+        {/* NEW: show image tags if available */}
+        {img.tags && img.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-1">
+            {img.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Action buttons: Download, Copy URL, Show Meta */}
         <div className="flex gap-1 mt-1 flex-wrap">
