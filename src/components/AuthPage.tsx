@@ -59,8 +59,8 @@ const AuthPage = () => {
           title: "Welcome back!",
           description: "Signed in successfully.",
         });
-        // Redirect to homepage
-        setTimeout(() => navigate('/'), 200);
+        // Redirect to admin dashboard after login
+        setTimeout(() => navigate('/admin'), 200);
       } else {
         // Must set redirect URL for email confirmation
         const redirectUrl = `${window.location.origin}/`;
