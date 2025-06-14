@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
@@ -86,8 +87,10 @@ export const useAuth = () => {
         duration: 10000,
       });
       
-      // Force redirect to home page after signout
-      window.location.href = '/';
+      // Delay redirect to allow user to see toast
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 5000);
     } catch (error: any) {
       console.error('Unexpected error during signout:', error);
       toast({
