@@ -1,8 +1,23 @@
-
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/client";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
 
 const EmbedDemo = () => {
+  const [config, setConfig] = useState({
+    primaryColor: '#16a34a',
+    position: 'bottom-right' as 'bottom-right' | 'bottom-left',
+    siteName: 'Your Website Name'
+  });
+  const [formState, setFormState] = useState(config);
+
+  const handleRefresh = () => {
+    setConfig(formState);
+  };
+
   const embedCode = `<!-- AI Chat Widget -->
 <script>
   (function() {
@@ -19,9 +34,9 @@ const EmbedDemo = () => {
         window.AIChat.init({
           apiEndpoint: '${SUPABASE_URL}/functions/v1/chat-embed',
           apiKey: '${SUPABASE_PUBLISHABLE_KEY}',
-          primaryColor: '#16a34a',
-          position: 'bottom-right',
-          siteName: 'Your Website Name'
+          primaryColor: '${config.primaryColor}',
+          position: '${config.position}',
+          siteName: '${config.siteName}'
         });
       };
       document.head.appendChild(script);
@@ -123,28 +138,51 @@ const EmbedDemo = () => {
       {/* Configuration Options */}
       <div className="mt-8 bg-white rounded-lg p-6 shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Configuration Options</h2>
-        <div className="grid md:grid-cols-2 gap-6">
+        <p className="text-gray-600 mb-6">
+          Change the options below and click refresh to update the preview and the embed code.
+        </p>
+        <div className="space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Available Parameters:</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li><code className="bg-gray-100 px-2 py-1 rounded">apiEndpoint</code> - Your API endpoint URL</li>
-              <li><code className="bg-gray-100 px-2 py-1 rounded">primaryColor</code> - Widget color (hex code)</li>
-              <li><code className="bg-gray-100 px-2 py-1 rounded">position</code> - 'bottom-right' or 'bottom-left'</li>
-              <li><code className="bg-gray-100 px-2 py-1 rounded">siteName</code> - Your website name</li>
-            </ul>
+            <Label htmlFor="siteName">Site Name</Label>
+            <Input
+              id="siteName"
+              value={formState.siteName}
+              onChange={(e) => setFormState({ ...formState, siteName: e.target.value })}
+              placeholder="Your Website Name"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="primaryColor">Primary Color</Label>
+            <Input
+              id="primaryColor"
+              type="color"
+              value={formState.primaryColor}
+              onChange={(e) => setFormState({ ...formState, primaryColor: e.target.value })}
+              className="w-24 p-1 h-10"
+            />
           </div>
           <div>
-            <h3 className="font-semibold mb-2">Example Configuration:</h3>
-            <div className="bg-gray-100 p-3 rounded text-sm font-mono">
-              {`{
-  apiEndpoint: '/api/chat',
-  primaryColor: '#3b82f6',
-  position: 'bottom-left',
-  siteName: 'My Store'
-}`}
-            </div>
+            <Label htmlFor="position">Widget Position</Label>
+            <Select
+              value={formState.position}
+              onValueChange={(value: 'bottom-right' | 'bottom-left') => {
+                setFormState({ ...formState, position: value });
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a position" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                <SelectItem value="bottom-left">Bottom Left</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+        <Button onClick={handleRefresh} className="mt-6">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh Code & Preview
+        </Button>
       </div>
     </div>
   );
