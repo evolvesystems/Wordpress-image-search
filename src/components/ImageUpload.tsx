@@ -36,6 +36,16 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
   };
 
   const analyzeImage = async (index: number) => {
+    const apiKey = localStorage.getItem('openai_api_key');
+    if (!apiKey) {
+      toast({
+        title: "OpenAI API Key Required",
+        description: "Please configure your OpenAI API key above to use AI analysis",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setImages(prev => prev.map((img, i) => 
       i === index ? { ...img, isAnalyzing: true } : img
     ));
@@ -44,7 +54,8 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
       const { data, error } = await supabase.functions.invoke('analyze-image', {
         body: { 
           imageUrl: images[index].preview,
-          filename: images[index].file.name 
+          filename: images[index].file.name,
+          apiKey: apiKey
         }
       });
 
@@ -69,7 +80,7 @@ const ImageUpload = ({ onUploadComplete }: { onUploadComplete: () => void }) => 
       ));
       toast({
         title: "Analysis failed",
-        description: "Could not analyze image. You can still add manual tags.",
+        description: "Could not analyze image. Please check your API key and try again.",
         variant: "destructive",
       });
     }

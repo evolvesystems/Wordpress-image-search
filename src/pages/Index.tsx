@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import ImageSearchHeader from '@/components/ImageSearchHeader';
 import SearchInterface from '@/components/SearchInterface';
 import ImageUpload from '@/components/ImageUpload';
+import OpenAIKeyForm from '@/components/OpenAIKeyForm';
 import TechnologyShowcase from '@/components/TechnologyShowcase';
 import { useImageSearch } from '@/hooks/useImageSearch';
 
@@ -22,6 +23,8 @@ const Index = () => {
       <ImageSearchHeader />
       
       <div className="container mx-auto px-4 py-8">
+        <OpenAIKeyForm />
+        
         <ImageUpload onUploadComplete={handleUploadComplete} />
         
         <SearchInterface 
