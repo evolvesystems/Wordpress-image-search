@@ -29,7 +29,7 @@ const AdminDashboard = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Robust null check and assign to a temp variable for type safety
+      // Fix for TS18047: explicitly check for non-null data
       if (
         !error &&
         data !== null &&
