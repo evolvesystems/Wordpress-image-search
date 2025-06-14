@@ -20,7 +20,7 @@ const AdminDashboard = () => {
   const readyToSearch = isWordPressSet && hasAPIKey;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="space-y-8">
       <div className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Your Dashboard</h1>
         <p className="text-gray-700">
