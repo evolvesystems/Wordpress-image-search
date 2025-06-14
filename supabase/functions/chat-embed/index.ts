@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from '../_shared/cors.ts'
 
@@ -36,21 +35,9 @@ serve(async (req) => {
     
     const lowerMessage = message.toLowerCase()
 
-    const imageKeywords = ['image', 'photo', 'picture', 'show me', 'find', 'search for'];
-    const isImageSearch = imageKeywords.some(keyword => lowerMessage.includes(keyword));
-
-    if (isImageSearch && wordpressUrl) {
-      let searchQuery = lowerMessage
-        .replace(/show me/g, '')
-        .replace(/find/g, '')
-        .replace(/search for/g, '')
-        .replace(/an image of/g, '')
-        .replace(/a picture of/g, '')
-        .replace(/a photo of/g, '')
-        .replace(/images of/g, '')
-        .replace(/pictures of/g, '')
-        .replace(/photos of/g, '')
-        .trim();
+    if (wordpressUrl) {
+      // If a WordPress URL is provided, we assume every query is for an image search.
+      const searchQuery = lowerMessage.trim();
 
       if (!searchQuery) {
         response.content = "Please tell me what image you're looking for.";
@@ -79,21 +66,24 @@ serve(async (req) => {
             response.content = `I was unable to connect to the image library for ${siteName}.`;
         }
       }
-    } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      response.content = `Hello! Welcome to ${siteName}. How can I assist you today?`
-    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-      response.content = "I'd be happy to help with pricing information. Could you tell me more about what you're looking for?"
-    } else if (lowerMessage.includes('contact') || lowerMessage.includes('support')) {
-      response.content = "You can reach our support team through the contact form on this website, or I can help answer your questions right here!"
-    } else if (lowerMessage.includes('product') || lowerMessage.includes('service')) {
-      response.content = "I can help you learn more about our products and services. What specific information are you looking for?"
-    } else if (lowerMessage.includes('help')) {
-      response.content = "I'm here to help! You can ask me about our products, services, pricing, or any other questions you might have."
-    } else if (lowerMessage.includes('thank')) {
-      response.content = "You're very welcome! Is there anything else I can help you with?"
     } else {
-      // Default helpful response
-      response.content = "That's a great question! While I'm still learning, I'd recommend checking out the main sections of this website or contacting our team directly for more detailed information."
+      // Fallback to conversational bot if no wordpressUrl is configured.
+      if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+        response.content = `Hello! Welcome to ${siteName}. How can I assist you today?`
+      } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
+        response.content = "I'd be happy to help with pricing information. Could you tell me more about what you're looking for?"
+      } else if (lowerMessage.includes('contact') || lowerMessage.includes('support')) {
+        response.content = "You can reach our support team through the contact form on this website, or I can help answer your questions right here!"
+      } else if (lowerMessage.includes('product') || lowerMessage.includes('service')) {
+        response.content = "I can help you learn more about our products and services. What specific information are you looking for?"
+      } else if (lowerMessage.includes('help')) {
+        response.content = "I'm here to help! You can ask me about our products, services, pricing, or any other questions you might have."
+      } else if (lowerMessage.includes('thank')) {
+        response.content = "You're very welcome! Is there anything else I can help you with?"
+      } else {
+        // Default helpful response
+        response.content = "That's a great question! While I'm still learning, I'd recommend checking out the main sections of this website or contacting our team directly for more detailed information."
+      }
     }
 
     return new Response(
