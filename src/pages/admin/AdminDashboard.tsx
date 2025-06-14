@@ -36,8 +36,8 @@ const AdminDashboard = () => {
         typeof data === 'object' &&
         'openai_api_key' in data
       ) {
-        // Guaranteed non-null here
-        setHasAPIKey(Boolean((data as { openai_api_key?: string | null }).openai_api_key));
+        const safeData = data as { openai_api_key?: string | null };
+        setHasAPIKey(Boolean(safeData.openai_api_key));
       } else {
         setHasAPIKey(false);
       }
