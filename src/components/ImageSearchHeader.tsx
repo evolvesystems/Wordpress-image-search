@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Camera, Wheat } from 'lucide-react';
+import { Search, Camera, Image } from 'lucide-react';
 import UserMenu from './UserMenu';
 
 const ImageSearchHeader = () => {
@@ -11,8 +11,8 @@ const ImageSearchHeader = () => {
           <div className="flex-1"></div>
           <div className="flex-1 text-center">
             <div className="flex justify-center items-center gap-3 mb-6">
-              <Wheat className="w-12 h-12" />
-              <h1 className="text-5xl font-bold">AgriVision Search</h1>
+              <Image className="w-12 h-12" />
+              <h1 className="text-5xl font-bold">WordPress Image Search</h1>
             </div>
           </div>
           <div className="flex-1 flex justify-end">
@@ -21,17 +21,16 @@ const ImageSearchHeader = () => {
         </div>
         <div className="text-center">
           <p className="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
-            AI-powered visual search for agricultural imagery. Find photos by describing what you see - 
-            from red soil and working dogs to specific crops and farming equipment.
+            Instantly search and organize images from your WordPress site. Find any photo just by describing what you need—by keyword, color, context, subject, or more.
           </p>
           <div className="flex justify-center items-center gap-6 text-green-100">
             <div className="flex items-center gap-2">
               <Camera className="w-5 h-5" />
-              <span>200,000+ Images</span>
+              <span>Full WordPress Media Library Integration</span>
             </div>
             <div className="flex items-center gap-2">
               <Search className="w-5 h-5" />
-              <span>AI Content Analysis</span>
+              <span>AI-Powered Content Analysis</span>
             </div>
           </div>
         </div>
@@ -41,3 +40,4 @@ const ImageSearchHeader = () => {
 };
 
 export default ImageSearchHeader;
+
