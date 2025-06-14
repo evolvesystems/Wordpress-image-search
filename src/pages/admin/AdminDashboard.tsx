@@ -29,12 +29,12 @@ const AdminDashboard = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Fix for TS18047: explicitly check for non-null data
+      // Fix for TS18047: TypeScript-safe null check for 'in' usage
       if (
         !error &&
-        data !== null &&
+        data &&
         typeof data === 'object' &&
-        'openai_api_key' in data
+        Object.prototype.hasOwnProperty.call(data, 'openai_api_key')
       ) {
         const safeData = data as { openai_api_key?: string | null };
         setHasAPIKey(Boolean(safeData.openai_api_key));
